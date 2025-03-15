@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DocSync</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+  <body>
+    <% if user_signed_in? %>
+    <div class="p-4 bg-gray-200">
+      <p>Welcome, <%= current_user.name %>! (Role: <%= current_user.role %>)</p>
+      <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
+    </div>
+  <% end %>
+    <%= yield %>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+Rails:
+  Enabled: true
+Style/Documentation:
+  Enabled: false  # Desactiva requerir comentarios si querés

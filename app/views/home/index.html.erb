@@ -1,0 +1,10 @@
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+  <h1 class="text-4xl font-bold text-blue-600 mb-4">Welcome to DocSync</h1>
+  <% if user_signed_in? %>
+    <p class="text-lg text-gray-700">Hello, <%= current_user.name %>!</p>
+    <p class="text-md text-gray-600 mb-6">Your role: <%= current_user.role %></p>
+    <%= button_to "Log out", destroy_user_session_path, method: :get, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
+  <% else %>
+    <p class="text-lg text-gray-700 mb-6">Please <%= link_to "log in", new_user_session_path, class: "text-blue-600 hover:underline" %> to continue.</p>
+  <% end %>
+</div>
