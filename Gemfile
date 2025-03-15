@@ -70,4 +70,5 @@ gem 'devise'
 gem 'rubocop', require: false
 gem 'rubocop-rails', require: false  # Opcional, para reglas específicas de Rails
 
-gem "tailwindcss-rails"
+gem 'bootstrap', '~> 5.3.0'
+gem 'sassc-rails', '~> 2.1'
