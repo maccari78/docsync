@@ -26,8 +26,11 @@
           <td><%= appointment.status %></td>
           <td>
             <%= link_to "Show", appointment_path(appointment), class: "btn btn-sm btn-info me-1" %>
-            <%= link_to "Edit", edit_appointment_path(appointment), class: "btn btn-sm btn-warning me-1" %>
-            <%= link_to "Delete", appointment_path(appointment), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+            <%= link_to "Edit", edit_appointment_path(appointment), class: "btn btn-sm btn-warning me-1" %><%= button_to "Delete", 
+              appointment_path(appointment), 
+              method: :delete, 
+              form: { data: { turbo_confirm: "Are you sure?" } }, 
+              class: "btn btn-sm btn-danger" %>
           </td>
         </tr>
       <% end %>
