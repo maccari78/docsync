@@ -1,7 +1,16 @@
+plugins:
+  - rubocop-rails
+
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
-Rails:
-  Enabled: true
+  Exclude:
+    - 'app/views/**/*'
+    - 'db/**/*'
+    - 'config/**/*'
+
 Style/Documentation:
-  Enabled: false  # Desactiva requerir comentarios si querés
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

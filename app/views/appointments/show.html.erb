@@ -1,0 +1,20 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Appointment Details</h1>
+
+  <div class="card">
+    <div class="card-body">
+      <p class="card-text"><strong>Patient:</strong> <%= @appointment.patient&.email || 'N/A' %></p>
+      <p class="card-text"><strong>Professional:</strong> <%= @appointment.professional&.user&.email || 'N/A' %></p>
+      <p class="card-text"><strong>Clinic:</strong> <%= @appointment.clinic&.name || 'N/A' %></p>
+      <p class="card-text"><strong>Date:</strong> <%= @appointment.date %></p>
+      <p class="card-text"><strong>Time:</strong> <%= @appointment.time %></p>
+      <p class="card-text"><strong>Status:</strong> <%= @appointment.status.humanize.capitalize %></p>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <%= link_to "Edit", edit_appointment_path(@appointment), class: "btn btn-warning me-2" %>
+    <%= link_to "Delete", appointment_path(@appointment), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Appointments", appointments_path, class: "btn btn-secondary" %>
+  </div>
+</div>

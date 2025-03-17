@@ -1,0 +1,46 @@
+<%= form_with(model: appointment, local: true) do |form| %>
+  <% if appointment.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(appointment.errors.count, "error") %> prohibited this appointment from being saved:</h4>
+      <ul>
+        <% appointment.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :patient_id, "Patient", class: "form-label" %>
+    <%= form.collection_select :patient_id, User.where(role: :patient), :id, :email, { include_blank: true }, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :professional_id, "Professional", class: "form-label" %>
+    <%= form.collection_select :professional_id, Professional.all, :id, :user, { include_blank: true }, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :clinic_id, "Clinic", class: "form-label" %>
+    <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { include_blank: true }, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :date, class: "form-label" %>
+    <%= form.date_field :date, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :time, class: "form-label" %>
+    <%= form.time_field :time, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :status, class: "form-label" %>
+    <%= form.select :status, Appointment.statuses.keys.map { |status| [status.humanize.capitalize, status] }, { include_blank: true }, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit "Update Appointment", class: "btn btn-primary" %>
+  </div>
+<% end %>
