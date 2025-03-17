@@ -3,3 +3,5 @@
 - Devise authentication system implementation
 - Creating seeds for test data
 - Fixing the routing error during logout"
+
+## Remove Tailwind and set up Bootstrap with sassc-rails
