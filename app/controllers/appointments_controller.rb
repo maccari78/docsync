@@ -15,12 +15,32 @@ class AppointmentsController < ApplicationController
                     else
                       []
                     end
+
+    Rails.logger.debug do
+      "Appointments for JSON: #{@appointments.map do |a|
+        { id: a.id, title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}",
+          start: a.date.to_date.strftime('%Y-%m-%d') + 'T' + a.time.strftime('%H:%M:%S') }
+      end.to_json}"
+    end
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: @appointments.map { |a|
+          {
+            id: a.id,
+            title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}", # Solo paciente y hora
+            start: a.date.to_date.strftime('%Y-%m-%d') + 'T' + a.time.strftime('%H:%M:%S')
+          }
+        }
+      end
+    end
   end
 
   def show; end
 
   def new
-    @appointment = Appointment.new
+    @appointment = Appointment.new(date: params[:date])
   end
 
   def edit; end
@@ -31,7 +51,7 @@ class AppointmentsController < ApplicationController
     @appointment.professional = current_user.professional if current_user.role == 'professional'
 
     if @appointment.save
-      redirect_to appointments_path, notice: 'Appointment was successfully created.'
+      redirect_to appointments_path, notice: 'Appointment created successfully.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -39,16 +59,23 @@ class AppointmentsController < ApplicationController
 
   def update
     if @appointment.update(appointment_params)
-      redirect_to appointments_path, notice: 'Appointment was successfully updated.'
+      respond_to do |format|
+        format.json { render json: { status: 'success' }, status: :ok }
+        format.html { redirect_to appointments_path, notice: 'Appointment updated successfully.' }
+      end
     else
-      render :edit, status: :unprocessable_entity
+      respond_to do |format|
+        format.json do
+          render json: { status: 'error', errors: @appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
-    @appointment = Appointment.find(params[:id])
     @appointment.destroy
-    redirect_to appointments_path, notice: 'Appointment was successfully deleted.'
+    redirect_to appointments_path, notice: 'Appointment deleted successfully.'
   end
 
   private

@@ -1,7 +1,7 @@
-<%= form_with(model: appointment, local: true) do |form| %>
+<%= form_with(model: appointment, class: 'needs-validation', local: true, novalidate: true) do |form| %>
   <% if appointment.errors.any? %>
     <div class="alert alert-danger">
-      <h4><%= pluralize(appointment.errors.count, "error") %> prohibited this appointment from being saved:</h4>
+      <h4><%= pluralize(appointment.errors.count, "error") %> impidieron guardar este turno:</h4>
       <ul>
         <% appointment.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -10,29 +10,37 @@
     </div>
   <% end %>
 
-  <div class="mb-3">
-    <%= form.label :patient_id, "Patient", class: "form-label" %>
-    <%= form.collection_select :patient_id, User.where(role: :patient), :id, :email, { include_blank: true }, class: "form-control" %>
-  </div>
+  <% if current_user.role == 'patient' %>
+    <%= form.hidden_field :patient_id, value: current_user.id %>
+  <% else %>
+    <div class="mb-3">
+      <%= form.label :patient_id, "Paciente", class: "form-label" %>
+      <%= form.collection_select :patient_id, User.where(role: :patient), :id, :email, { include_blank: true }, class: "form-control", required: true %>
+    </div>
+  <% end %>
+
+  <% if current_user.role == 'professional' %>
+    <%= form.hidden_field :professional_id, value: current_user.professional.id %>
+  <% else %>
+    <div class="mb-3">
+      <%= form.label :professional_id, "Profesional", class: "form-label" %>
+      <%= form.collection_select :professional_id, Professional.all, :id, :user_email, { include_blank: true }, class: "form-control", required: true %>
+    </div>
+  <% end %>
 
   <div class="mb-3">
-    <%= form.label :professional_id, "Professional", class: "form-label" %>
-    <%= form.collection_select :professional_id, Professional.all, :id, :user, { include_blank: true }, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :clinic_id, "Clinic", class: "form-label" %>
-    <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { include_blank: true }, class: "form-control" %>
+    <%= form.label :clinic_id, "Clínica", class: "form-label" %>
+    <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { include_blank: true }, class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
     <%= form.label :date, class: "form-label" %>
-    <%= form.date_field :date, class: "form-control" %>
+    <%= form.date_field :date, class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
     <%= form.label :time, class: "form-label" %>
-    <%= form.time_field :time, class: "form-control" %>
+    <%= form.time_field :time, class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
@@ -40,7 +48,8 @@
     <%= form.select :status, Appointment.statuses.keys.map { |status| [status.humanize.capitalize, status] }, { include_blank: true }, class: "form-control" %>
   </div>
 
-  <div class="mb-3">
-    <%= form.submit "Update Appointment", class: "btn btn-primary" %>
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <%= form.submit "Save Appointment", class: "btn btn-primary" %>
+    <%= link_to "Back to Appointments", appointments_path, class: "btn btn-secondary" %>
   </div>
 <% end %>

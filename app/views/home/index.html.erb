@@ -2,9 +2,12 @@
   <div class="text-center">
     <h1 class="display-4 text-primary mb-4">Welcome to DocSync</h1>
     <% if user_signed_in? %>
-      <p class="lead text-muted">Hello, <%= current_user.name %>!</p>
-      <p class="text-muted mb-4">Your role: <%= current_user.role %></p>
-      <%= button_to "Log out", destroy_user_session_path, method: :get, class: "btn btn-danger" %>
+      <p class="lead text-muted">Hello, <%= current_user.role.humanize.capitalize %> <%= current_user.name %>!</p>
+      <p class="text-muted mb-4">Your role: <%= current_user.role.humanize.capitalize %></p>
+      <div class="d-flex justify-content-center gap-2">
+        <%= link_to "Appointments", appointments_path, class: "btn btn-primary" %>
+        <%= link_to "Log out", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-danger" %>
+      </div>
     <% else %>
       <p class="lead text-muted mb-4">Please <%= link_to "log in", new_user_session_path, class: "text-primary" %> to continue.</p>
     <% end %>
