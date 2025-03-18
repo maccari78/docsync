@@ -1,0 +1,13 @@
+<div class="container mt-5">
+  <h1>Clinic Details</h1>
+
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <p><strong>Name:</strong> <%= @clinic.name %></p>
+  <p><strong>Address:</strong> <%= @clinic.address %></p>
+
+  <%= link_to 'Edit', edit_clinic_path(@clinic), class: 'btn btn-warning' %>
+  <%= link_to 'Back', clinics_path, class: 'btn btn-secondary' %>
+</div>

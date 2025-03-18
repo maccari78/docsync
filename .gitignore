@@ -21,3 +21,4 @@
 
 # Archivos generados por macOS
 .DS_Store
+/config/master.key

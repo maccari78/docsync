@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @admin_dashboard %>
+
+<div>
+  <%= link_to "Edit this admin dashboard", edit_admin_dashboard_path(@admin_dashboard) %> |
+  <%= link_to "Back to admin dashboards", admin_dashboards_path %>
+
+  <%= button_to "Destroy this admin dashboard", @admin_dashboard, method: :delete %>
+</div>

@@ -1,0 +1,16 @@
+<div class="container mt-5">
+  <h1>Patient Details</h1>
+
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <p><strong>Name:</strong> <%= @patient.name %></p>
+  <p><strong>Email:</strong> <%= @patient.email %></p>
+  <p><strong>Phone:</strong> <%= @patient.phone %></p>
+  <p><strong>Professional:</strong> <%= @patient.professional.email if @patient.professional %></p>
+  <p><strong>Photo:</strong> <%= image_tag @patient.photo if @patient.photo.attached? %></p>
+
+  <%= link_to 'Edit', edit_patient_path(@patient), class: 'btn btn-warning' %>
+  <%= link_to 'Back', patients_path, class: 'btn btn-secondary' %>
+</div>

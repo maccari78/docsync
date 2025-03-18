@@ -1,0 +1,28 @@
+<%= form_with(model: clinic, local: true) do |form| %>
+    <% if clinic.errors.any? %>
+      <div class="alert alert-danger">
+        <h4><%= pluralize(clinic.errors.count, "error") %> prohibited this clinic from being saved:</h4>
+        <ul>
+          <% clinic.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <div class="field">
+      <%= form.label :name %>
+      <%= form.text_field :name, class: 'form-control' %>
+    </div>
+  
+    <div class="field">
+      <%= form.label :address %>
+      <%= form.text_field :address, class: 'form-control' %>
+    </div>
+  
+    <div class="actions mt-3">
+      <%= form.submit class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+  
+  <%= link_to 'Back', clinics_path, class: 'btn btn-secondary mt-2' %>

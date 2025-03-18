@@ -1,0 +1,43 @@
+<%= form_with(model: patient, local: true) do |form| %>
+    <% if patient.errors.any? %>
+      <div class="alert alert-danger">
+        <h4><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h4>
+        <ul>
+          <% patient.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  
+    <div class="field">
+      <%= form.label :name %>
+      <%= form.text_field :name, class: 'form-control' %>
+    </div>
+  
+    <div class="field">
+      <%= form.label :email %>
+      <%= form.text_field :email, class: 'form-control' %>
+    </div>
+  
+    <div class="field">
+      <%= form.label :phone %>
+      <%= form.text_field :phone, class: 'form-control' %>
+    </div>
+  
+    <div class="field">
+      <%= form.label :professional_id %>
+      <%= form.collection_select :professional_id, User.where(role: 'professional'), :id, :email, { include_blank: true }, class: 'form-control' %>
+    </div>
+  
+    <div class="field">
+      <%= form.label :photo %>
+      <%= form.file_field :photo, class: 'form-control' %>
+    </div>
+  
+    <div class="actions mt-3">
+      <%= form.submit class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+  
+  <%= link_to 'Back', patients_path, class: 'btn btn-secondary mt-2' %>
