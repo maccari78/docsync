@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
-  resources :admin_dashboards
   devise_for :users
-  root "home#index"
 
+  resources :clinics
+  resources :professionals
+  resources :patients
+  resources :secretaries
   resources :appointments
   resources :admin_dashboards
-  resources :patients
-  resources :clinics
+
+  root "home#index"
 end

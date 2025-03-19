@@ -1,0 +1,16 @@
+<div class="container mt-5">
+  <h1>Professional Details</h1>
+
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <p><strong>Name:</strong> <%= "#{@professional.user.first_name} #{@professional.user.last_name}" %></p>
+  <p><strong>Email:</strong> <%= @professional.user.email %></p>
+  <p><strong>Specialty:</strong> <%= @professional.specialty %></p>
+  <p><strong>Clinic:</strong> <%= @professional.clinic.name %></p>
+  <p><strong>License Number:</strong> <%= @professional.license_number %></p>
+
+  <%= link_to 'Edit', edit_professional_path(@professional), class: 'btn btn-warning' %>
+  <%= link_to 'Back', professionals_path, class: 'btn btn-secondary' %>
+</div>

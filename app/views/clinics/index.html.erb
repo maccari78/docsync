@@ -10,6 +10,8 @@
       <tr>
         <th>Name</th>
         <th>Address</th>
+        <th>Professionals</th>
+        <th>Secretaries</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -18,14 +20,17 @@
         <tr>
           <td><%= clinic.name %></td>
           <td><%= clinic.address %></td>
+          <td><%= clinic.professionals.map { |p| p.user.email }.join(", ") %></td>
+          <td><%= clinic.secretaries.map(&:email).join(", ") %></td>
           <td>
-            <%= link_to 'Edit', edit_clinic_path(clinic), class: 'btn btn-warning btn-sm' %>
-            <%= button_to 'Delete', clinic_path(clinic), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+            <%= link_to "Show", clinic_path(clinic), class: "btn btn-info btn-sm" %>
+            <%= link_to "Edit", edit_clinic_path(clinic), class: "btn btn-warning btn-sm" %>
+            <%= button_to "Delete", clinic_path(clinic), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
           </td>
         </tr>
       <% end %>
     </tbody>
   </table>
 
-  <%= link_to 'New Clinic', new_clinic_path, class: 'btn btn-primary' %>
+  <%= link_to "New Clinic", new_clinic_path, class: "btn btn-primary" %>
 </div>

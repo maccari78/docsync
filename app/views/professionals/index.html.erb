@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <h1>Professionals</h1>
+
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <% if alert %>
+    <div class="alert alert-danger"><%= alert %></div>
+  <% end %>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Specialty</th>
+        <th>Clinic</th>
+        <th>License Number</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @professionals.each do |professional| %>
+        <tr>
+          <td><%= "#{professional.user.first_name} #{professional.user.last_name}" %></td>
+          <td><%= professional.user.email %></td>
+          <td><%= professional.specialty %></td>
+          <td><%= professional.clinic.name %></td>
+          <td><%= professional.license_number %></td>
+          <td>
+            <%= link_to 'Show', professional_path(professional), class: 'btn btn-info btn-sm' %>
+            <%= link_to 'Edit', edit_professional_path(professional), class: 'btn btn-warning btn-sm' %>
+            <%= button_to 'Delete', professional_path(professional), method: :delete, data: { turbo: false, turbo_confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to 'New Professional', new_professional_path, class: 'btn btn-primary' %>
+</div>

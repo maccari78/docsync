@@ -1,0 +1,15 @@
+<div class="container mt-5">
+  <h1>Secretary Details</h1>
+
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <p><strong>Name:</strong> <%= "#{@secretary.first_name} #{@secretary.last_name}" %></p>
+  <p><strong>Email:</strong> <%= @secretary.email %></p>
+  <p><strong>Clinic:</strong> <%= @secretary.clinic&.name || "N/A" %></p>
+  <p><strong>Professionals:</strong> <%= @secretary.professionals.any? ? @secretary.professionals.map { |p| "#{p.user.first_name} #{p.user.last_name}" }.join(", ") : "None" %></p>
+
+  <%= link_to 'Edit', edit_secretary_path(@secretary), class: 'btn btn-warning' %>
+  <%= link_to 'Back', secretaries_path, class: 'btn btn-secondary' %>
+</div>

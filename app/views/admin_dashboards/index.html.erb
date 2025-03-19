@@ -30,5 +30,21 @@
         </div>
       </div>
     </div>
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Professionals</h5>
+          <p class="card-text"><%= Professional.count %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Total Secretaries</h5>
+          <p class="card-text"><%= User.where(role: :secretary).count %></p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
