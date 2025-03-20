@@ -1,10 +1,18 @@
 class ProfessionalsController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_admin!, only: %i[index destroy]
+  before_action :restrict_access, except: :index
   before_action :set_professional, only: %i[show edit update destroy]
 
   def index
-    @professionals = Professional.all
+    @professionals = if admin?
+                       Professional.all
+                     elsif professional?
+                       Professional.where(id: current_professional.id)
+                     elsif secretary?
+                       current_secretary.professionals
+                     else
+                       Professional.none
+                     end
   end
 
   def show; end
@@ -19,7 +27,6 @@ class ProfessionalsController < ApplicationController
   end
 
   def create
-    # Crear un nuevo usuario con role: :professional
     user = User.new(
       first_name: professional_params[:first_name],
       last_name: professional_params[:last_name],
@@ -30,16 +37,15 @@ class ProfessionalsController < ApplicationController
     )
 
     if user.save
-      # Crear el registro de Professional asociado al nuevo usuario
       @professional = Professional.new(
         user: user,
         clinic_id: professional_params[:clinic_id],
-        specialty: professional_params[:specialty],
+        specialty: professional_params[:specialty] || 'dentist',
         license_number: professional_params[:license_number]
       )
 
       if @professional.save
-        redirect_to @professional, notice: "Professional was successfully created."
+        redirect_to @professional, notice: 'Professional was successfully created.'
       else
         @clinics = Clinic.all
         render :new, status: :unprocessable_entity
@@ -55,14 +61,14 @@ class ProfessionalsController < ApplicationController
   end
 
   def update
-    if @professional.update(professional_params.except(:first_name, :last_name, :email, :password, :password_confirmation))
-      # Actualizar los datos del usuario asociado
+    if @professional.update(professional_params.except(:first_name, :last_name, :email, :password,
+                                                       :password_confirmation))
       @professional.user.update(
         first_name: professional_params[:first_name],
         last_name: professional_params[:last_name],
         email: professional_params[:email]
       )
-      redirect_to @professional, notice: "Professional was successfully updated."
+      redirect_to @professional, notice: 'Professional was successfully updated.'
     else
       @clinics = Clinic.all
       render :edit, status: :unprocessable_entity
@@ -71,20 +77,25 @@ class ProfessionalsController < ApplicationController
 
   def destroy
     @professional.destroy
-    redirect_to professionals_url, notice: "Professional was successfully destroyed."
+    redirect_to professionals_url, notice: 'Professional was successfully destroyed.'
   end
 
   private
 
   def set_professional
     @professional = Professional.find(params[:id])
+    unless admin? || (professional? && @professional == current_professional) ||
+           (secretary? && current_secretary.professionals.include?(@professional))
+      redirect_to root_path, alert: 'You are not authorized to access this professional.'
+    end
   end
 
   def professional_params
-    params.require(:professional).permit(:first_name, :last_name, :email, :password, :password_confirmation, :clinic_id, :specialty, :license_number)
+    params.require(:professional).permit(:first_name, :last_name, :email, :password, :password_confirmation,
+                                         :clinic_id, :specialty, :license_number)
   end
 
-  def require_admin!
-    redirect_to root_path, alert: "Access denied. Admins only." unless current_user&.role == "admin"
+  def restrict_access
+    redirect_to root_path, alert: 'Access denied.' if patient? || (!admin? && %w[destroy].include?(action_name))
   end
 end

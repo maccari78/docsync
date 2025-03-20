@@ -3,17 +3,17 @@ class AppointmentsController < ApplicationController
   before_action :set_appointment, only: %i[show edit update destroy]
 
   def index
-    @appointments = if current_user
-                      case current_user.role
-                      when 'professional'
-                        current_user.appointments_as_professional
-                      when 'patient'
-                        current_user.appointments_as_patient
-                      else
-                        Appointment.all # Para admin/secretary
-                      end
+    @appointments = if admin?
+                      Appointment.all
+                    elsif professional?
+                      current_professional.appointments
+                    elsif secretary?
+                      professional_ids = current_secretary.professionals.pluck(:id)
+                      Appointment.where(professional_id: professional_ids)
+                    elsif patient?
+                      Appointment.where(patient_id: current_user.id)
                     else
-                      []
+                      Appointment.none
                     end
 
     Rails.logger.debug do
@@ -29,7 +29,7 @@ class AppointmentsController < ApplicationController
         render json: @appointments.map { |a|
           {
             id: a.id,
-            title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}", # Solo paciente y hora
+            title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}",
             start: a.date.to_date.strftime('%Y-%m-%d') + 'T' + a.time.strftime('%H:%M:%S')
           }
         }
@@ -47,8 +47,8 @@ class AppointmentsController < ApplicationController
 
   def create
     @appointment = Appointment.new(appointment_params)
-    @appointment.patient = current_user if current_user.role == 'patient'
-    @appointment.professional = current_user.professional if current_user.role == 'professional'
+    @appointment.patient = current_user if patient?
+    @appointment.professional = current_professional if professional?
 
     if @appointment.save
       redirect_to appointments_path, notice: 'Appointment created successfully.'
@@ -82,6 +82,12 @@ class AppointmentsController < ApplicationController
 
   def set_appointment
     @appointment = Appointment.find(params[:id])
+    # Asegurarse de que el usuario tenga permiso para ver/editar este turno
+    unless admin? || (professional? && @appointment.professional == current_professional) ||
+           (secretary? && current_secretary.professionals.include?(@appointment.professional)) ||
+           (patient? && @appointment.patient_id == current_user.id)
+      redirect_to root_path, alert: 'You are not authorized to access this appointment.'
+    end
   end
 
   def appointment_params

@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   resources :patients
   resources :secretaries
   resources :appointments
-  resources :admin_dashboards
+  resources :admin_dashboards, only: [:index]
 
-  root "home#index"
+  root "appointments#index"
 end

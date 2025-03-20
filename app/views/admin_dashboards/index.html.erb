@@ -10,7 +10,7 @@
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Total Appointments</h5>
-          <p class="card-text"><%= Appointment.count %></p>
+          <p class="card-text"><%= @total_appointments %></p>
         </div>
       </div>
     </div>
@@ -18,7 +18,7 @@
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Total Patients</h5>
-          <p class="card-text"><%= Patient.count %></p>
+          <p class="card-text"><%= @total_patients %></p>
         </div>
       </div>
     </div>
@@ -26,7 +26,7 @@
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Total Clinics</h5>
-          <p class="card-text"><%= Clinic.count %></p>
+          <p class="card-text"><%= @total_clinics %></p>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Total Professionals</h5>
-          <p class="card-text"><%= Professional.count %></p>
+          <p class="card-text"><%= @total_professionals %></p>
         </div>
       </div>
     </div>
@@ -42,9 +42,27 @@
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Total Secretaries</h5>
-          <p class="card-text"><%= User.where(role: :secretary).count %></p>
+          <p class="card-text"><%= @total_secretaries %></p>
         </div>
       </div>
     </div>
   </div>
+
+  <h2>Appointments by Clinic</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Clinic</th>
+        <th>Total Appointments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @appointments_by_clinic.each do |clinic_name, count| %>
+        <tr>
+          <td><%= clinic_name %></td>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
