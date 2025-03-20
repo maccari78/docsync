@@ -47,14 +47,13 @@
     <%= form.select :specialty, options_for_select(["dentist"], professional.specialty), { prompt: "Select a specialty" }, class: "form-control", required: true %>
   </div>
 
-  <div class="field">
+  <div class="field mb-3">
     <%= form.label :license_number, "License number" %>
     <%= form.text_field :license_number, class: "form-control" %>
   </div>
 
-  <div class="actions mt-3">
-    <%= form.submit "Save", class: "btn btn-primary" %>
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <%= form.submit "Save Professional", class: "btn btn-primary" %>
+    <%= link_to "Back to Professionals", professionals_path, class: "btn btn-secondary" %>
   </div>
 <% end %>
-
-<%= link_to 'Back', professionals_path, class: 'btn btn-secondary mt-2' %>

@@ -6,6 +6,7 @@ class Professional < ApplicationRecord
   has_many :professionals_secretaries, dependent: :destroy
   has_many :secretaries, through: :professionals_secretaries, source: :secretary
   enum :specialty, { dentist: 0 }, default: :dentist
+  validates :specialty, presence: true
 
   validates :specialty, presence: true
   validates :clinic_id, presence: true

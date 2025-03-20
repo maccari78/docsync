@@ -1,43 +1,42 @@
 <%= form_with(model: patient, local: true) do |form| %>
-    <% if patient.errors.any? %>
-      <div class="alert alert-danger">
-        <h4><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h4>
-        <ul>
-          <% patient.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-  
-    <div class="field">
-      <%= form.label :name %>
-      <%= form.text_field :name, class: 'form-control' %>
-    </div>
-  
-    <div class="field">
-      <%= form.label :email %>
-      <%= form.text_field :email, class: 'form-control' %>
-    </div>
-  
-    <div class="field">
-      <%= form.label :phone %>
-      <%= form.text_field :phone, class: 'form-control' %>
-    </div>
-  
-    <div class="field">
-      <%= form.label :professional_id %>
-      <%= form.collection_select :professional_id, User.where(role: 'professional'), :id, :email, { include_blank: true }, class: 'form-control' %>
-    </div>
-  
-    <div class="field">
-      <%= form.label :photo %>
-      <%= form.file_field :photo, class: 'form-control' %>
-    </div>
-  
-    <div class="actions mt-3">
-      <%= form.submit class: 'btn btn-primary' %>
+  <% if patient.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h4>
+      <ul>
+        <% patient.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
-  
-  <%= link_to 'Back', patients_path, class: 'btn btn-secondary mt-2' %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.text_field :email, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :phone %>
+    <%= form.text_field :phone, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :professional_id %>
+    <%= form.collection_select :professional_id, User.where(role: 'professional'), :id, :email, { include_blank: true }, class: 'form-control' %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :photo %>
+    <%= form.file_field :photo, class: 'form-control' %>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <%= form.submit "Save Patient", class: "btn btn-primary" %>
+    <%= link_to "Back to Patients", patients_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

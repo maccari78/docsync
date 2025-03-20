@@ -14,7 +14,7 @@
     <%= form.hidden_field :patient_id, value: current_user.id %>
   <% else %>
     <div class="mb-3">
-      <%= form.label :patient_id, "Paciente", class: "form-label" %>
+      <%= form.label :patient_id, "Patient", class: "form-label" %>
       <%= form.collection_select :patient_id, User.where(role: :patient), :id, :email, { include_blank: true }, class: "form-control", required: true %>
     </div>
   <% end %>
@@ -23,13 +23,13 @@
     <%= form.hidden_field :professional_id, value: current_user.professional.id %>
   <% else %>
     <div class="mb-3">
-      <%= form.label :professional_id, "Profesional", class: "form-label" %>
+      <%= form.label :professional_id, "Professional", class: "form-label" %>
       <%= form.collection_select :professional_id, Professional.all, :id, :user_email, { include_blank: true }, class: "form-control", required: true %>
     </div>
   <% end %>
 
   <div class="mb-3">
-    <%= form.label :clinic_id, "Clínica", class: "form-label" %>
+    <%= form.label :clinic_id, "Clinic", class: "form-label" %>
     <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { include_blank: true }, class: "form-control", required: true %>
   </div>
 

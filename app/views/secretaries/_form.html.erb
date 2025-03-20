@@ -42,14 +42,13 @@
     <%= form.collection_select :clinic_id, @clinics, :id, :name, { prompt: "Select a clinic" }, class: "form-control", required: true %>
   </div>
 
-  <div class="field">
+  <div class="field mb-3">
     <%= form.label :professional_ids, "Assigned Professionals" %>
     <%= form.collection_select :professional_ids, @professionals, :id, ->(p) { "#{p.user.first_name} #{p.user.last_name}" }, { prompt: "Select professionals" }, { multiple: true, class: "form-control" } %>
   </div>
 
-  <div class="actions mt-3">
-    <%= form.submit "Save", class: "btn btn-primary" %>
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <%= form.submit "Save Secretary", class: "btn btn-primary" %>
+    <%= link_to "Back to Secretaries", secretaries_path, class: "btn btn-secondary" %>
   </div>
 <% end %>
-
-<%= link_to 'Back', secretaries_path, class: 'btn btn-secondary mt-2' %>
