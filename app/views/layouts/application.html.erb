@@ -7,32 +7,10 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   </head>
   <body>
     <div class="container-fluid">
-      <% if notice %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <%= notice %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <% end %>
-      <% if alert %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <%= alert %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <% end %>
-
-      <% if user_signed_in? %>
-        <div class="text-end mb-3">
-          <span class="me-2">Logged in as <%= current_user.email %></span>
-          <%= link_to "Log out", destroy_user_session_path, method: :delete, class: "btn btn-outline-danger" %>
-        </div>
-      <% else %>
-        <div class="text-end mb-3">
-          <%= link_to "Log in", new_user_session_path, class: "btn btn-primary" %>
-        </div>
-      <% end %>
 
       <%= yield %>
     </div>
