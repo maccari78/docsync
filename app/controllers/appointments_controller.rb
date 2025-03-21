@@ -18,7 +18,7 @@ class AppointmentsController < ApplicationController
 
     Rails.logger.debug do
       "Appointments for JSON: #{@appointments.map do |a|
-        { id: a.id, title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}",
+        { id: a.id, title: "#{a.patient&.name || 'N/A'} - #{a.time.strftime('%H:%M')}",
           start: a.date.to_date.strftime('%Y-%m-%d') + 'T' + a.time.strftime('%H:%M:%S') }
       end.to_json}"
     end
@@ -29,7 +29,7 @@ class AppointmentsController < ApplicationController
         render json: @appointments.map { |a|
           {
             id: a.id,
-            title: "#{a.patient&.email || 'N/A'} - #{a.time.strftime('%H:%M')}",
+            title: "#{a.patient&.name || 'N/A'} - #{a.time.strftime('%H:%M')}",
             start: a.date.to_date.strftime('%Y-%m-%d') + 'T' + a.time.strftime('%H:%M:%S')
           }
         }
@@ -82,7 +82,6 @@ class AppointmentsController < ApplicationController
 
   def set_appointment
     @appointment = Appointment.find(params[:id])
-    # Asegurarse de que el usuario tenga permiso para ver/editar este turno
     unless admin? || (professional? && @appointment.professional == current_professional) ||
            (secretary? && current_secretary.professionals.include?(@appointment.professional)) ||
            (patient? && @appointment.patient_id == current_user.id)
