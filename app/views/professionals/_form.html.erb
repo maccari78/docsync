@@ -44,7 +44,7 @@
 
   <div class="field">
     <%= form.label :specialty, "Specialty *" %>
-    <%= form.select :specialty, options_for_select(["dentist"], professional.specialty), { prompt: "Select a specialty" }, class: "form-control", required: true %>
+    <%= form.select :specialty, options_for_select(Professional.specialties.map { |key, _value| [key.humanize, key] }, professional.specialty || 'dentist'), {}, class: 'form-select', required: true %>
   </div>
 
   <div class="field mb-3">
