@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Resumen del Turno #<%= @appointment.id %></h1>
+    <p>Hola <%= @patient.name %>,</p>
+    <p>Aquí tienes los detalles de tu turno reciente:</p>
+    <ul>
+      <li><strong>Fecha:</strong> <%= @appointment.date.strftime('%d/%m/%Y') %></li>
+      <li><strong>Hora:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
+      <li><strong>Profesional:</strong> <%= @user.first_name %> <%= @user.last_name %></li>
+      <li><strong>Clínica:</strong> <%= @clinic.name %>, <%= @clinic.address %></li>
+      <li><strong>Detalles:</strong> <%= @appointment.treatment_details || 'No especificado' %></li>
+    </ul>
+    <% if @appointment.payment&.pending? %>
+      <p>El pago está pendiente. Puedes pagarlo ahora:</p>
+      <a href="<%= pay_appointment_url(@appointment, protocol: 'https') %>" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Pagar Turno</a>
+    <% end %>
+    <p>Saludos,<br>Equipo DocSync</p>
+  </body>
+</html>

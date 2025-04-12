@@ -1,0 +1,13 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <%= form_with(model: @professional, url: professional_path(@professional), local: true, id: "edit-professional-form") do |form| %>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1>Edit Professional</h1>
+      <div class="d-flex gap-2">
+        <%= form.submit "Save Professional", class: "btn btn-primary" %>
+        <%= link_to "Back to Professionals", professionals_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+
+    <%= render 'form', professional: @professional, form: form %>
+  <% end %>
+</div>

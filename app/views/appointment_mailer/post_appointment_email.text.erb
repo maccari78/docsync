@@ -1,0 +1,17 @@
+Resumen del Turno #<%= @appointment.id %>
+
+Hola <%= @patient.name %>,
+
+Aquí tienes los detalles de tu turno reciente:
+- Fecha: <%= @appointment.date.strftime('%d/%m/%Y') %>
+- Hora: <%= @appointment.time.strftime('%H:%M') %>
+- Profesional: <%= @user.first_name %> <%= @user.last_name %>
+- Clínica: <%= @clinic.name %>, <%= @clinic.address %>
+- Detalles: <%= @appointment.treatment_details || 'No especificado' %>
+
+<% if @appointment.payment&.pending? %>
+El pago está pendiente. Paga aquí: <%= pay_appointment_url(@appointment, protocol: 'https') %>
+<% end %>
+
+Saludos,
+Equipo DocSync

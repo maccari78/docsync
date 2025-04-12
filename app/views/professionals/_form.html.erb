@@ -1,0 +1,54 @@
+<%= form_with(model: professional, url: (professional.persisted? ? professional_path(professional) : professionals_path), local: true, id: (professional.new_record? ? "new-professional-form" : "edit-professional-form")) do |form| %>
+  <% if professional.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(professional.errors.count, "error") %> prohibited this professional from being saved:</h4>
+      <ul>
+        <% professional.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :first_name, "First Name *" %>
+    <%= form.text_field :first_name, value: professional.user&.first_name || "", class: "form-control", required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :last_name, "Last Name *" %>
+    <%= form.text_field :last_name, value: professional.user&.last_name || "", class: "form-control", required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :email, "Email *" %>
+    <%= form.email_field :email, value: professional.user&.email || "", class: "form-control", required: true %>
+  </div>
+
+  <% if professional.new_record? %>
+    <div class="field">
+      <%= form.label :password, "Password *" %>
+      <%= form.password_field :password, class: "form-control", required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password_confirmation, "Password Confirmation *" %>
+      <%= form.password_field :password_confirmation, class: "form-control", required: true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :clinic_id, "Clinic *" %>
+    <%= form.collection_select :clinic_id, @clinics, :id, :name, { prompt: "Select a clinic" }, class: "form-control", required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :specialty, "Specialty *" %>
+    <%= form.select :specialty, options_for_select(Professional.specialties.map { |key, _value| [key.humanize, key] }, professional.specialty || 'dentist'), {}, class: 'form-select', required: true %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :license_number, "License number" %>
+    <%= form.text_field :license_number, class: "form-control" %>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<%= form_with(model: clinic, local: true, id: "new-clinic-form") do |form| %>
+  <% if clinic.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(clinic.errors.count, "error") %> prohibited this clinic from being saved:</h4>
+      <ul>
+        <% clinic.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field mb-3">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :address %>
+    <%= form.text_field :address, class: "form-control" %>
+  </div>
+<% end %>

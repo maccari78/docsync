@@ -1,0 +1,35 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Clinics</h1>
+    <%= link_to "New Clinic", new_clinic_path, class: "btn btn-primary" %>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Professionals</th>
+        <th>Secretaries</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @clinics.each do |clinic| %>
+        <tr>
+          <td><%= clinic.name %></td>
+          <td><%= clinic.address %></td>
+          <td><%= clinic.professionals.map { |p| p.user.name }.join(", ") %></td>
+          <td><%= clinic.secretaries.map(&:name).join(", ") %></td>
+          <td>
+            <div class="d-flex gap-2">
+              <%= link_to "Show", clinic_path(clinic), class: "btn btn-info btn-sm" %>
+              <%= link_to "Edit", edit_clinic_path(clinic), class: "btn btn-warning btn-sm" %>
+              <%= button_to "Delete", clinic_path(clinic), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+            <div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>  
+</div>

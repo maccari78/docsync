@@ -1,0 +1,13 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <%= form_with(model: @clinic, local: true, id: "new-clinic-form") do |form| %>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1>New Clinic</h1>
+      <div class="d-flex gap-2">
+        <%= form.submit "Save Clinic", class: "btn btn-primary" %>
+        <%= link_to "Back to Clinics", clinics_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+
+    <%= render 'form', clinic: @clinic, form: form %>
+  <% end %>
+</div>

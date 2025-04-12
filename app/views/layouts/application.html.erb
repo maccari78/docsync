@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DocSync</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+
+    <%= favicon_link_tag asset_path('favicon.ico') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light shadow">
+      <div class="container-fluid">
+        
+      <%= link_to root_path, class: "navbar-brand" do %>
+        <%= image_tag "logo-512x512-white.png", alt: "DocSync Logo", style: "height: 40px;" %>
+      <% end %>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Close">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <% if user_signed_in? %>
+              <% role = current_user.role || "admin" %>
+              <% admin_routes = [
+                  { name: "Dashboard", path: admin_dashboards_path, controller: "admin/dashboards" },
+                  { name: "Calendar", path: appointments_path, controller: "appointments" },
+                  { name: "Appointments", path: list_appointments_path, controller: "appointments" },
+                  { name: "Patients", path: patients_path, controller: "patients" },
+                  { name: "Clinics", path: clinics_path, controller: "clinics" },
+                  { name: "Professionals", path: professionals_path, controller: "professionals" },
+                  { name: "Secretaries", path: secretaries_path, controller: "secretaries" }
+                ] %>
+              <% professional_routes = [
+                  { name: "Calendar", path: appointments_path, controller: "appointments" },
+                  { name: "Appointments", path: list_appointments_path, controller: "appointments" },
+                  { name: "Patients", path: patients_path, controller: "patients" }
+                ] %>
+              <% secretary_routes = [
+                  { name: "Calendar", path: appointments_path, controller: "appointments" },
+                  { name: "Appointments", path: list_appointments_path, controller: "appointments" },
+                  { name: "Patients", path: patients_path, controller: "patients" }
+                ] %>
+              <% patient_routes = [
+                  { name: "My Calendar", path: appointments_path, controller: "appointments" },
+                  { name: "My Profile", path: patients_path, controller: "patients" }
+              ] %>
+              <% available_routes = case role
+                                   when "admin" then admin_routes
+                                   when "professional" then professional_routes
+                                   when "secretary" then secretary_routes
+                                   when "patient" then patient_routes
+                                   else []
+                                   end %>
+              <% available_routes.each do |route| %>
+                <li class="nav-item">
+                  <%= link_to route[:name], route[:path], class: "nav-link #{'active' if controller_name == route[:controller].split('/').last && (route[:name] != 'Appointments' || action_name == 'list')}" %>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+          <% if user_signed_in? %>
+            <div class="navbar-text me-3">
+              Logged in as <%= current_user.name %>
+            </div>
+            <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn btn-danger" %>
+          <% else %>
+            <div class="d-flex gap-2">
+              <%= link_to "Sign up", new_user_registration_path, class: "btn btn-primary" %>
+              <%= link_to "Log in", new_user_session_path, class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <% if notice %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <!-- Cargar los scripts de Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      console.log('Script de inicialización cargado');
+
+      function waitForFullCalendar(callback) {
+        if (typeof FullCalendar !== 'undefined') {
+          console.log('FullCalendar está disponible');
+          callback();
+        } else {
+          console.log('Esperando a que FullCalendar se cargue...');
+          setTimeout(() => waitForFullCalendar(callback), 100);
+        }
+      }
+
+      window.initializeCalendar = function() {
+        var calendarEl = document.getElementById('calendar');
+        if (calendarEl) {
+          console.log('Inicializando FullCalendar...');
+          // Destruir el calendario existente si ya fue inicializado
+          if (calendarEl.fullCalendarInstance) {
+            calendarEl.fullCalendarInstance.destroy();
+          }
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: '/appointments.json',
+            editable: true,
+            selectable: true,
+            eventClick: function(info) {
+              window.location.href = '/appointments/' + info.event.id;
+            },
+            eventDrop: function(info) {
+              fetch('/appointments/' + info.event.id, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                  date: info.event.start.toISOString().split('T')[0],
+                  time: info.event.start.toTimeString().split(' ')[0]
+                })
+              }).then(response => {
+                if (!response.ok) {
+                  alert('Error al actualizar el turno. Intenta de nuevo.');
+                  calendar.refetchEvents();
+                }
+              });
+            },
+            select: function(info) {
+              window.location.href = '/appointments/new?date=' + info.startStr;
+            },
+            eventContent: function(arg) {
+              return { html: `<b>${arg.event.title}</b>` };
+            },
+            eventDidMount: function(info) {
+              console.log('Evento cargado:', info.event);
+              if (new Date(info.event.start) < new Date()) {
+                info.el.style.backgroundColor = '#d3d3d3';
+              }
+            },
+            height: '100%',
+            contentHeight: 'auto',
+            expandRows: true,
+            eventTimeFormat: { 
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            },
+            loading: function(isLoading) {
+              if (isLoading) {
+                calendarEl.style.opacity = '0.5';
+                calendarEl.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Cargando turnos...</div>';
+              } else {
+                calendarEl.style.opacity = '1';
+                const loadingDiv = calendarEl.querySelector('div[style*="position: absolute"]');
+                if (loadingDiv) loadingDiv.remove();
+              }
+            }
+          });
+          calendar.render();
+          calendarEl.fullCalendarInstance = calendar;
+          console.log('FullCalendar renderizado');
+        } else {
+          console.log('No se encontró el elemento #calendar (esto es normal en páginas sin calendario)');
+        }
+      };
+
+      function initializeWithCheck() {
+        waitForFullCalendar(window.initializeCalendar);
+      }
+
+      document.addEventListener('DOMContentLoaded', initializeWithCheck);
+      document.addEventListener('turbo:load', initializeWithCheck);
+
+      document.addEventListener('turbo:before-render', function() {
+        var calendarEl = document.getElementById('calendar');
+        if (calendarEl && calendarEl.fullCalendarInstance) {
+          calendarEl.fullCalendarInstance.destroy();
+        }
+      });
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (document.getElementById('calendar') && !document.getElementById('calendar').fullCalendarInstance) {
+            waitForFullCalendar(window.initializeCalendar);
+          }
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      console.log('window.initializeCalendar definido');
+    </script>
+  </body>
+</html>

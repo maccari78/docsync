@@ -1,0 +1,13 @@
+<div class="container-fluid mt-3 px-4">
+  <h1>Pagar Turno</h1>
+  <p>Estás a punto de pagar el turno #<%= @appointment.id %>.</p>
+  <p>Detalles:</p>
+  <ul>
+    <li><strong>Fecha:</strong> <%= @appointment.date.strftime('%d/%m/%Y') %></li>
+    <li><strong>Hora:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
+    <li><strong>Profesional:</strong> <%= @appointment.professional.user.name %></li>
+    <li><strong>Clínica:</strong> <%= @appointment.clinic.name %></li>
+  </ul>
+  <%= button_to "Confirmar Pago", initiate_payment_appointment_path(@appointment), method: :post, class: "btn btn-primary", data: { turbo: false } %>
+  <%= link_to "Volver", appointment_path(@appointment), class: "btn btn-secondary" %>
+</div>

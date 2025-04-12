@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  patient: one
+  professional: one
+  clinic: one
+  date: 2025-03-15
+  time: MyString
+  notes: MyText
+
+two:
+  patient: two
+  professional: two
+  clinic: two
+  date: 2025-03-15
+  time: MyString
+  notes: MyText

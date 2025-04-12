@@ -1,0 +1,14 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Secretary Details</h1>
+    <div class="d-flex gap-2">
+      <%= link_to 'Edit Secretary', edit_secretary_path(@secretary), class: 'btn btn-warning' %>
+      <%= link_to 'Back to Secretaries', secretaries_path, class: 'btn btn-secondary' %>
+    </div>
+  </div>
+
+  <p><strong>Name:</strong> <%= "#{@secretary.first_name} #{@secretary.last_name}" %></p>
+  <p><strong>Email:</strong> <%= @secretary.email %></p>
+  <p><strong>Clinic:</strong> <%= @secretary.clinic&.name || "N/A" %></p>
+  <p><strong>Professionals:</strong> <%= @secretary.professionals.any? ? @secretary.professionals.map { |p| "#{p.user.first_name} #{p.user.last_name}" }.join(", ") : "None" %></p>
+</div>

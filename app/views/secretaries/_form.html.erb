@@ -1,0 +1,49 @@
+<%= form_with(model: secretary, url: (secretary.persisted? ? secretary_path(secretary) : secretaries_path), local: true, id: (secretary.new_record? ? "new-secretary-form" : "edit-secretary-form")) do |form| %>
+  <% if secretary.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(secretary.errors.count, "error") %> prohibited this secretary from being saved:</h4>
+      <ul>
+        <% secretary.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :first_name, "First Name *" %>
+    <%= form.text_field :first_name, class: "form-control", required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :last_name, "Last Name *" %>
+    <%= form.text_field :last_name, class: "form-control", required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :email, "Email *" %>
+    <%= form.email_field :email, class: "form-control", required: true %>
+  </div>
+
+  <% if secretary.new_record? %>
+    <div class="field">
+      <%= form.label :password, "Password *" %>
+      <%= form.password_field :password, class: "form-control", required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password_confirmation, "Password Confirmation *" %>
+      <%= form.password_field :password_confirmation, class: "form-control", required: true %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :clinic_id, "Clinic *" %>
+    <%= form.collection_select :clinic_id, @clinics, :id, :name, { prompt: "Select a clinic" }, class: "form-control", required: true %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :professional_ids, "Assigned Professionals" %>
+    <%= form.collection_select :professional_ids, @professionals, :id, ->(p) { "#{p.user.first_name} #{p.user.last_name}" }, { prompt: "Select professionals" }, { multiple: true, class: "form-control" } %>
+  </div>
+<% end %>

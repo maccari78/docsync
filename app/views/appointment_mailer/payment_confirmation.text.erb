@@ -1,0 +1,16 @@
+Pago Confirmado
+
+Hola <%= @patient.name %>,
+
+Gracias por tu pago para el turno #<%= @appointment.id %>.
+
+Detalles:
+- Fecha: <%= @appointment.date.strftime('%d/%m/%Y') %>
+- Hora: <%= @appointment.time.strftime('%H:%M') %>
+- Profesional: <%= @user.first_name %> <%= @user.last_name %>
+- Clínica: <%= @clinic.name %>, <%= @clinic.address %>
+
+Tu turno está confirmado. Si necesitas más información, contacta a la clínica.
+
+Saludos,
+Equipo DocSync
