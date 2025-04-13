@@ -1,8 +1,9 @@
 class AppointmentsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:payment_notification]
   before_action :set_appointment, only: %i[show edit update destroy initiate_payment success failure pay]
   before_action :ensure_admin, only: %i[deleted restore hard_destroy]
   before_action :restrict_patient_actions, only: %i[new create edit update destroy]
+  skip_before_action :verify_authenticity_token, only: [:payment_notification]
 
   def index
     Rails.logger.debug { "Current user: #{current_user.inspect}" }
