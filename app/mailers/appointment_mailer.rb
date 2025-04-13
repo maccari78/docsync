@@ -7,7 +7,7 @@ class AppointmentMailer < ApplicationMailer
     @clinic = appointment.clinic
     @google_calendar_url = google_calendar_url
     @google_maps_url = google_maps_url
-    mail(to: @patient.email, subject: 'Tu Turno Ha Sido Confirmado')
+    mail(to: @patient.email, subject: 'Your appointment was confirmed')
   end
 
   def post_appointment_email(appointment)
@@ -16,7 +16,7 @@ class AppointmentMailer < ApplicationMailer
     @professional = appointment.professional
     @user = @professional.user
     @clinic = appointment.clinic
-    mail(to: @patient.email, subject: 'Detalles de Tu Turno Reciente')
+    mail(to: @patient.email, subject: 'Appointment details')
   end
 
   def payment_confirmation(appointment)
@@ -25,7 +25,7 @@ class AppointmentMailer < ApplicationMailer
     @professional = appointment.professional
     @user = @professional.user
     @clinic = appointment.clinic
-    mail(to: @patient.email, subject: "Confirmación de Pago - Turno ##{appointment.id}")
+    mail(to: @patient.email, subject: "Pay confirmed - Appointment ##{appointment.id}")
   end
 
   private
@@ -34,9 +34,9 @@ class AppointmentMailer < ApplicationMailer
     start_time = @appointment.date.to_time + @appointment.time.seconds_since_midnight
     end_time = start_time + 1.hour
     event_details = {
-      text: "Turno Dental con #{@user.first_name} #{@user.last_name}",
+      text: "Dental appointment with #{@user.first_name} #{@user.last_name}",
       dates: "#{start_time.strftime('%Y%m%dT%H%M%S')}/#{end_time.strftime('%Y%m%dT%H%M%S')}",
-      details: "Turno en #{@clinic.name}, #{@clinic.address}",
+      details: "Appointment in #{@clinic.name}, #{@clinic.address}",
       location: @clinic.address,
       add: 'reminder:15'
     }
