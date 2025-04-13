@@ -1,13 +1,12 @@
 Rails.application.routes.draw do
-  get 'debug/appointments'
   devise_for :users, controllers: {
     sessions: 'users/sessions',
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
-  
+
   post "/users/auth/google_oauth2", to: "users/auth#google_oauth2"
 
-  get '/run_seeds', to: 'seed#run'  
+  get '/run_seeds', to: 'seed#run'
 
   resources :clinics
   resources :professionals
