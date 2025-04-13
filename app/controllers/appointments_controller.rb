@@ -168,27 +168,27 @@ class AppointmentsController < ApplicationController
   end
 
   def initiate_payment
-    Rails.logger.info "Iniciando pago para appointment #{@appointment.id}"
+    Rails.logger.info "Initiating payment for appointment #{@appointment.id}"
     unless @appointment.confirmed?
-      Rails.logger.warn "Turno no confirmado: #{@appointment.id}"
-      redirect_to appointment_path(@appointment), alert: 'El turno debe estar confirmado para iniciar el pago.'
+      Rails.logger.warn "Unconfirmed appointment: #{@appointment.id}"
+      redirect_to appointment_path(@appointment), alert: 'The appointment must be confirmed to initiate payment.'
       return
     end
 
     if @appointment.payment&.approved?
-      Rails.logger.warn "Turno ya pagado: #{@appointment.id}"
-      redirect_to appointment_path(@appointment), alert: 'El turno ya está pagado.'
+      Rails.logger.warn "Already paid appointment: #{@appointment.id}"
+      redirect_to appointment_path(@appointment), alert: 'The appointment has already been paid.'
       return
     end
 
-    amount = 1000 # Ajusta según configuración
-    Rails.logger.info "Creando pago con monto: #{amount}"
+    amount = 1000 
+    Rails.logger.info "Creating payment with amount: #{amount}"
 
     payment = @appointment.payment || @appointment.create_payment!(
       amount: amount / 100.0,
       status: :pending
     )
-    Rails.logger.info "Pago creado: ID #{payment.id}"
+    Rails.logger.info "Payment created: ID #{payment.id}"
 
     Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY', nil)
     Rails.logger.info 'Stripe API key configurada'
@@ -212,30 +212,30 @@ class AppointmentsController < ApplicationController
                                                    cancel_url: failure_appointment_url(@appointment, protocol: 'https'),
                                                    metadata: { payment_id: payment.id.to_s }
                                                  })
-      Rails.logger.info "Sesión de Stripe creada: ID #{session.id}"
+      Rails.logger.info "Stripe session created: ID #{session.id}"
 
       payment.update(external_payment_id: session.id)
-      Rails.logger.info "Pago actualizado con external_payment_id: #{session.id}"
+      Rails.logger.info "Payment updated with external_payment_id: #{session.id}"
 
       redirect_to session.url, allow_other_host: true
-      Rails.logger.info "Redirigiendo a Stripe: #{session.url}"
+      Rails.logger.info "Redirecting to Stripe: #{session.url}"
     rescue Stripe::StripeError => e
-      Rails.logger.error "Error de Stripe: #{e.message}"
-      redirect_to appointment_path(@appointment), alert: "Error al procesar el pago: #{e.message}"
+      Rails.logger.error "Stripe Error: #{e.message}"
+      redirect_to appointment_path(@appointment), alert: "Error processing payment: #{e.message}"
     rescue StandardError => e
-      Rails.logger.error "Error inesperado: #{e.message}\n#{e.backtrace.join("\n")}"
-      redirect_to appointment_path(@appointment), alert: 'Error inesperado al iniciar el pago.'
+      Rails.logger.error "Unexpected error: #{e.message}\n#{e.backtrace.join("\n")}"
+      redirect_to appointment_path(@appointment), alert: 'Unexpected error initiating payment.'
     end
   end
 
   def pay
     unless @appointment.confirmed? || @appointment.completed?
-      redirect_to appointment_path(@appointment), alert: 'El turno no está disponible para pago.'
+      redirect_to appointment_path(@appointment), alert: 'The appointment is not available for payment.'
       return
     end
     return unless @appointment.payment&.approved?
 
-    redirect_to appointment_path(@appointment), alert: 'El turno ya está pagado.'
+    redirect_to appointment_path(@appointment), alert: 'The appointment is already paid.'
     nil
   end
 
@@ -277,15 +277,15 @@ class AppointmentsController < ApplicationController
 
   def success
     if @appointment.payment&.approved?
-      redirect_to appointment_path(@appointment), notice: '¡Pago realizado con éxito!'
+      redirect_to appointment_path(@appointment), notice: 'Payment successful!'
     else
-      redirect_to appointment_path(@appointment), alert: 'El pago está procesando. Te notificaremos cuando se complete.'
+      redirect_to appointment_path(@appointment), alert: 'The payment is being processed. We will notify you when it is complete.'
     end
   end
 
   def failure
     @appointment.payment.update(status: :rejected) if @appointment.payment
-    redirect_to appointment_path(@appointment), alert: 'El pago falló. Intenta nuevamente.'
+    redirect_to appointment_path(@appointment), alert: 'The payment failed. Please try again.'
   end
 
   private
@@ -304,13 +304,13 @@ class AppointmentsController < ApplicationController
              (professional? && @appointment.professional == current_professional) ||
              (secretary? && current_secretary.professionals.include?(@appointment.professional)) ||
              (patient? && patient && @appointment.patient_id == patient.id)
-        redirect_to root_path, alert: 'No tienes autorización para acceder a este turno.'
+        redirect_to root_path, alert: 'You are not authorized to access this appointment.'
       end
     else
       @appointment = Appointment.deleted.find(params[:id])
       unless admin?
         redirect_to root_path,
-                    alert: 'Solo los administradores pueden restaurar o eliminar permanentemente turnos.'
+                    alert: 'Only admins can restore or permanently delete appointments.'
       end
     end
   end
@@ -324,12 +324,12 @@ class AppointmentsController < ApplicationController
     return if admin?
 
     redirect_to root_path,
-                alert: 'Solo los administradores pueden acceder a turnos eliminados o realizar acciones de restauración/eliminación permanente.'
+                alert: 'Only admins can access deleted appointments or perform restore/permanent delete actions.'
   end
 
   def restrict_patient_actions
     return unless patient?
 
-    redirect_to appointments_path, alert: 'Los pacientes no pueden realizar esta acción.'
+    redirect_to appointments_path, alert: 'Patients cannot perform this action.'
   end
 end
