@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'debug/appointments'
   devise_for :users, controllers: {
     sessions: 'users/sessions',
     omniauth_callbacks: 'users/omniauth_callbacks'
@@ -27,6 +28,8 @@ Rails.application.routes.draw do
     end
   end
   post '/stripe/webhook', to: 'appointments#payment_notification'
+
+  get '/debug/appointments', to: 'debug#appointments'
 
   resources :admin_dashboards, only: [:index]
 
