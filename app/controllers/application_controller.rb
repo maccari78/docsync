@@ -3,7 +3,8 @@ class ApplicationController < ActionController::Base
   before_action :restore_user_from_cookie, unless: :logout_action?
   before_action :log_session_data
   before_action :configure_permitted_parameters, if: :devise_controller?
-  skip_before_action :verify_authenticity_token, if: :omniauth_request?
+  # Desactiva CSRF para OmniAuth y Stripe webhook
+  skip_before_action :verify_authenticity_token, if: :bypass_csrf_verification?
 
   protected
 
@@ -44,6 +45,10 @@ class ApplicationController < ActionController::Base
                 :current_patient
 
   private
+
+  def bypass_csrf_verification?
+    omniauth_request? || request.path.start_with?('/stripe/webhook')
+  end
 
   def restore_user_from_cookie
     if warden.authenticated? || session[:user_id].present?
