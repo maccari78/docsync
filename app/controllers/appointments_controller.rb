@@ -9,18 +9,18 @@ class AppointmentsController < ApplicationController
     Rails.logger.debug { "User role: #{current_user.role}" }
 
     @appointments = if admin?
-                      Appointment.active.includes(:patient, :professional).all
+                      Appointment.where(deleted_at: nil).includes(:patient, :professional).all
                     elsif professional?
-                      current_professional.appointments.active.includes(:patient)
+                      current_professional.appointments.where(deleted_at: nil).includes(:patient)
                     elsif secretary?
                       Rails.logger.debug { "Current secretary: #{current_secretary.inspect}" }
                       professional_ids = current_secretary.professionals.pluck(:id)
                       Rails.logger.debug { "Professional IDs for secretary: #{professional_ids}" }
-                      Appointment.active.where(professional_id: professional_ids).includes(:patient)
+                      Appointment.where(deleted_at: nil).where(professional_id: professional_ids).includes(:patient)
                     elsif patient?
                       patient = Patient.find_by(email: current_user.email)
                       if patient
-                        Appointment.active.where(patient_id: patient.id).includes(:professional)
+                        Appointment.where(deleted_at: nil).where(patient_id: patient.id).includes(:professional)
                       else
                         Appointment.none
                       end
@@ -242,7 +242,7 @@ class AppointmentsController < ApplicationController
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
     endpoint_secret = ENV.fetch('STRIPE_WEBHOOK_SECRET', nil)
-  
+
     begin
       event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
     rescue JSON::ParserError => e
@@ -252,7 +252,7 @@ class AppointmentsController < ApplicationController
       Rails.logger.error "Webhook signature verification failed: #{e.message}"
       return head :bad_request
     end
-  
+
     case event.type
     when 'checkout.session.completed', 'checkout.session.async_payment_succeeded'
       session = event.data.object
@@ -270,10 +270,10 @@ class AppointmentsController < ApplicationController
         Rails.logger.error "Payment not found for session: #{session.id}"
       end
     end
-  
+
     head :ok
   end
-  
+
   def success
     if @appointment.payment&.approved?
       redirect_to appointment_path(@appointment), notice: '¡Pago realizado con éxito!'
@@ -281,11 +281,9 @@ class AppointmentsController < ApplicationController
       redirect_to appointment_path(@appointment), alert: 'El pago está procesando. Te notificaremos cuando se complete.'
     end
   end
-  
+
   def failure
-    if @appointment.payment
-      @appointment.payment.update(status: :rejected)
-    end
+    @appointment.payment.update(status: :rejected) if @appointment.payment
     redirect_to appointment_path(@appointment), alert: 'El pago falló. Intenta nuevamente.'
   end
 
