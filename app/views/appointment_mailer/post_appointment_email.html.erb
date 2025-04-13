@@ -6,17 +6,22 @@
   <body>
     <h1>Appointment Summary #<%= @appointment.id %></h1>
     <p>Hello <%= @patient.name %>,</p>
-    <p>Here are the details of your recent appointment:</p>
+    <p>Your recent appointment has been completed. Here are the details:</p>
     <ul>
       <li><strong>Date:</strong> <%= @appointment.date.strftime('%Y-%m-%d') %></li>
       <li><strong>Time:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
       <li><strong>Professional:</strong> <%= @user.first_name %> <%= @user.last_name %></li>
       <li><strong>Clinic:</strong> <%= @clinic.name %>, <%= @clinic.address %></li>
-      <li><strong>Details:</strong> <%= @appointment.treatment_details || 'Not specified' %></li>
+      <li><strong>Treatment Details:</strong> <%= @appointment.treatment_details || 'Not specified' %></li>
+      <% if @appointment.prescription.present? %>
+        <li><strong>Prescription:</strong> <%= @appointment.prescription %></li>
+      <% end %>
     </ul>
-    <% if @appointment.payment&.pending? %>
-      <p>The payment is pending. You can pay now:</p>
+    <% if @appointment.payment.nil? || @appointment.payment.pending? %>
+      <p>Your payment is pending. You can pay now:</p>
       <a href="<%= pay_appointment_url(@appointment, protocol: 'https') %>" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Pay Appointment</a>
+    <% elsif @appointment.payment.approved? %>
+      <p>Your payment has been approved. Thank you!</p>
     <% end %>
     <p>Best regards,<br>DocSync Team</p>
   </body>

@@ -50,8 +50,8 @@
 DocSync es una app de gestión de Clínicas odontológicas (en principio), íntegramente desarrollada con Ruby on Rails, Bootstrap y PostgreSQL. La misma cuenta con CRUD's de 'appointments (con soft delete), pacients, clinics, professionals, secretaries' y admin dashborad para estadísticas además cuenta con soft delete para appointments, diferentes permisos para sus diferentes grupos de usuarios 'admin, professionals, secretaries, patients', todos sus ID's son UUID para mayor seguridad de datos sensibles, los pacientes son ingresados en el sistema por el admin o la secretaria pero luego tienen la posibilidad de ingresar con sus credenciales de Google y estas se sincronizan con los datos ingresados en sistema, los turnos tienen diferentes estados 'pending, confirmed, completed, cancelled', cuando el turno se crea en pending y pasa a confirmed o directamente se crea en confirmed se envía un email con los detalles del mismo y links a Google Calendar, para agregar el turno y que te avise para no olvidarlo y Google Maps para saber exactamente como llegar desde la ubicación actual del paciente hasta la clínica, a las casillas de email de los pacientes. Appointments y Pacients cuentan con paginado y diferentes filtros y los Patients tienen la posibilidad de agregar una foto que los represente en la app mediante Cloudinary además de todo esto mediante la app se puede abonar el servicio mediante Stripe.
 
 # Pendientes:
-- Asegurarse del pago completo en producción en Render.
-- Envío de email con detalle de lo hecho en el turno, receta si es necesario y botón de pago del mismo.
+- Asegurarse del pago completo en producción en Render. 
+- Una vez que el turno pasa a completed envío de email con detalle de lo hecho en el turno, receta si es necesario y botón de pago del mismo.
 - Fortalecer el dashboard
 - Analizar si es conveniente que al cerrar pestaña inmediatamente se cierre la cuenta.
 - Analizar si es buena idea que el paciente mismo vea todos los turnos pendientes del profesional y pueda elegir el dia y horario de su proximo turno.
