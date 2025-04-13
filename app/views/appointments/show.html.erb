@@ -1,38 +1,38 @@
 <div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Detalles del Turno</h1>
+    <h1>Appointment Details</h1>
     <div class="d-flex gap-3 gap-md-2">
       <% if patient? %>
         <% patient = Patient.find_by(email: current_user.email) %>
         <% if patient && @appointment.patient_id == patient.id && @appointment.confirmed? %>
           <% can_pay = !@appointment.payment || @appointment.payment.pending? %>
           <% if can_pay %>
-            <%= button_to "Pagar Turno", initiate_payment_appointment_path(@appointment), method: :post, class: "btn btn-primary", data: { turbo: false } %>
+            <%= button_to "Pay Appointment", initiate_payment_appointment_path(@appointment), method: :post, class: "btn btn-primary", data: { turbo: false } %>
           <% end %>
         <% end %>
       <% end %>
       <% if admin? || professional? || (secretary? && current_secretary.professionals.include?(@appointment.professional)) %>
-        <%= link_to "Editar Turno", edit_appointment_path(@appointment), class: "btn btn-warning" %>
-        <%= button_to "Eliminar Turno", 
+        <%= link_to "Edit Appointment", edit_appointment_path(@appointment), class: "btn btn-warning" %>
+        <%= button_to "Delete Appointment", 
           appointment_path(@appointment), 
           method: :delete, 
-          form: { data: { turbo_confirm: "¿Estás seguro?" } }, 
+          form: { data: { turbo_confirm: "Are you sure?" } }, 
           class: "btn btn-danger" %>
       <% end %>
-      <%= link_to "Volver al Calendario", appointments_path, class: "btn btn-secondary" %>
+      <%= link_to "Back to Calendar", appointments_path, class: "btn btn-secondary" %>
     </div>
   </div>
 
   <div class="card mb-3">
     <div class="card-body">
-      <p><strong>Paciente:</strong> <%= @appointment.patient&.name || 'N/A' %></p>
-      <p><strong>Profesional:</strong> <%= @appointment.professional&.user&.name || 'N/A' %></p>
-      <p><strong>Clínica:</strong> <%= @appointment.clinic&.name || 'N/A' %></p>
-      <p><strong>Fecha:</strong> <%= @appointment.date&.strftime('%d/%m/%Y') || 'N/A' %></p>
-      <p><strong>Hora:</strong> <%= @appointment.time&.strftime('%H:%M') || 'N/A' %></p>
-      <p><strong>Estado:</strong> <%= @appointment.status&.humanize&.capitalize || 'N/A' %></p>
+      <p><strong>Patient:</strong> <%= @appointment.patient&.name || 'N/A' %></p>
+      <p><strong>Professional:</strong> <%= @appointment.professional&.user&.name || 'N/A' %></p>
+      <p><strong>Clinic:</strong> <%= @appointment.clinic&.name || 'N/A' %></p>
+      <p><strong>Date:</strong> <%= @appointment.date&.strftime('%Y-%m-%d') || 'N/A' %></p>
+      <p><strong>Time:</strong> <%= @appointment.time&.strftime('%H:%M') || 'N/A' %></p>
+      <p><strong>Status:</strong> <%= @appointment.status&.humanize&.capitalize || 'N/A' %></p>
       <% if @appointment.payment %>
-        <p><strong>Estado del Pago:</strong> <%= @appointment.payment.status&.humanize&.capitalize || 'N/A' %></p>
+        <p><strong>Payment Status:</strong> <%= @appointment.payment.status&.humanize&.capitalize || 'N/A' %></p>
       <% end %>
     </div>
   </div>

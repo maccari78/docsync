@@ -1,13 +1,13 @@
 <div class="container-fluid mt-3 px-4">
-  <h1>Pagar Turno</h1>
-  <p>Estás a punto de pagar el turno #<%= @appointment.id %>.</p>
-  <p>Detalles:</p>
+  <h1>Pay Appointment</h1>
+  <p>You are about to pay for appointment #<%= @appointment.id %>.</p>
+  <p>Details:</p>
   <ul>
-    <li><strong>Fecha:</strong> <%= @appointment.date.strftime('%d/%m/%Y') %></li>
-    <li><strong>Hora:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
-    <li><strong>Profesional:</strong> <%= @appointment.professional.user.name %></li>
-    <li><strong>Clínica:</strong> <%= @appointment.clinic.name %></li>
+    <li><strong>Date:</strong> <%= @appointment.date.strftime('%Y-%m-%d') %></li>
+    <li><strong>Time:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
+    <li><strong>Professional:</strong> <%= @appointment.professional.user.name %></li>
+    <li><strong>Clinic:</strong> <%= @appointment.clinic.name %></li>
   </ul>
-  <%= button_to "Confirmar Pago", initiate_payment_appointment_path(@appointment), method: :post, class: "btn btn-primary", data: { turbo: false } %>
-  <%= link_to "Volver", appointment_path(@appointment), class: "btn btn-secondary" %>
+  <%= button_to "Confirm Payment", initiate_payment_appointment_path(@appointment), method: :post, class: "btn btn-primary", data: { turbo: false } %>
+  <%= link_to "Back", appointment_path(@appointment), class: "btn btn-secondary" %>
 </div>

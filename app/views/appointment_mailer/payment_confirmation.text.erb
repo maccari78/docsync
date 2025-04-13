@@ -1,16 +1,16 @@
-Pago Confirmado
+Payment Confirmed
 
-Hola <%= @patient.name %>,
+Hello <%= @patient.name %>,
 
-Gracias por tu pago para el turno #<%= @appointment.id %>.
+Thank you for your payment for appointment #<%= @appointment.id %>.
 
-Detalles:
-- Fecha: <%= @appointment.date.strftime('%d/%m/%Y') %>
-- Hora: <%= @appointment.time.strftime('%H:%M') %>
-- Profesional: <%= @user.first_name %> <%= @user.last_name %>
-- Clínica: <%= @clinic.name %>, <%= @clinic.address %>
+Details:
+- Date: <%= @appointment.date.strftime('%Y-%m-%d') %>
+- Time: <%= @appointment.time.strftime('%H:%M') %>
+- Professional: <%= @user.first_name %> <%= @user.last_name %>
+- Clinic: <%= @clinic.name %>, <%= @clinic.address %>
 
-Tu turno está confirmado. Si necesitas más información, contacta a la clínica.
+Your appointment is confirmed. If you need more information, please contact the clinic.
 
-Saludos,
-Equipo DocSync
+Best regards,
+DocSync Team

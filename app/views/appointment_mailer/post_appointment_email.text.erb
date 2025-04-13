@@ -1,17 +1,17 @@
-Resumen del Turno #<%= @appointment.id %>
+Appointment Summary #<%= @appointment.id %>
 
-Hola <%= @patient.name %>,
+Hello <%= @patient.name %>,
 
-Aquí tienes los detalles de tu turno reciente:
-- Fecha: <%= @appointment.date.strftime('%d/%m/%Y') %>
-- Hora: <%= @appointment.time.strftime('%H:%M') %>
-- Profesional: <%= @user.first_name %> <%= @user.last_name %>
-- Clínica: <%= @clinic.name %>, <%= @clinic.address %>
-- Detalles: <%= @appointment.treatment_details || 'No especificado' %>
+Here are the details of your recent appointment:
+- Date: <%= @appointment.date.strftime('%Y-%m-%d') %>
+- Time: <%= @appointment.time.strftime('%H:%M') %>
+- Professional: <%= @user.first_name %> <%= @user.last_name %>
+- Clinic: <%= @clinic.name %>, <%= @clinic.address %>
+- Details: <%= @appointment.treatment_details || 'Not specified' %>
 
 <% if @appointment.payment&.pending? %>
-El pago está pendiente. Paga aquí: <%= pay_appointment_url(@appointment, protocol: 'https') %>
+The payment is pending. Pay here: <%= pay_appointment_url(@appointment, protocol: 'https') %>
 <% end %>
 
-Saludos,
-Equipo DocSync
+Best regards,
+DocSync Team

@@ -4,17 +4,17 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <h1>Pago Confirmado</h1>
-    <p>Hola <%= @patient.name %>,</p>
-    <p>Gracias por tu pago para el turno #<%= @appointment.id %>.</p>
-    <p>Detalles:</p>
+    <h1>Payment Confirmed</h1>
+    <p>Hello <%= @patient.name %>,</p>
+    <p>Thank you for your payment for appointment #<%= @appointment.id %>.</p>
+    <p>Details:</p>
     <ul>
-      <li><strong>Fecha:</strong> <%= @appointment.date.strftime('%d/%m/%Y') %></li>
-      <li><strong>Hora:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
-      <li><strong>Profesional:</strong> <%= @user.first_name %> <%= @user.last_name %></li>
-      <li><strong>Clínica:</strong> <%= @clinic.name %>, <%= @clinic.address %></li>
+      <li><strong>Date:</strong> <%= @appointment.date.strftime('%Y-%m-%d') %></li>
+      <li><strong>Time:</strong> <%= @appointment.time.strftime('%H:%M') %></li>
+      <li><strong>Professional:</strong> <%= @user.first_name %> <%= @user.last_name %></li>
+      <li><strong>Clinic:</strong> <%= @clinic.name %>, <%= @clinic.address %></li>
     </ul>
-    <p>Tu turno está confirmado. Si necesitas más información, contacta a la clínica.</p>
-    <p>Saludos,<br>Equipo DocSync</p>
+    <p>Your appointment is confirmed. If you need more information, please contact the clinic.</p>
+    <p>Best regards,<br>DocSync Team</p>
   </body>
 </html>
