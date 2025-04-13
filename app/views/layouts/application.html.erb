@@ -64,6 +64,9 @@
                   <%= link_to route[:name], route[:path], class: "nav-link #{'active' if controller_name == route[:controller].split('/').last && (route[:name] != 'Appointments' || action_name == 'list')}" %>
                 </li>
               <% end %>
+              <li class="nav-item">
+                <%= link_to "About Me", about_path, class: "nav-link" %>
+              </li>
             <% end %>
           </ul>
           <% if user_signed_in? %>
