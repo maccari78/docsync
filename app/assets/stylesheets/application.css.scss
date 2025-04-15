@@ -4,11 +4,45 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  display: flex; 
-  flex-direction: column; 
-  min-height: 100vh; 
-  background-color: #fff !important; /* Forzar fondo blanco */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff !important;
+  overflow: hidden; 
+}
+
+@media (min-width: 992px) {
+  html, body {
+    overflow: hidden !important;
+  }
+  body.calendar-view {
+    overflow: hidden !important;
+  }
+  main {
+    overflow: hidden !important; 
+  }
+  .container-fluid {
+    overflow: hidden !important; 
+  }
+  .table-responsive {
+    overflow: hidden !important; 
+  }
+}
+
+@media (max-width: 991px) {
+  html, body {
+    overflow-y: auto !important;
+  }
+  .container-fluid {
+    overflow-y: auto !important;
+    max-height: 100vh;
+  }
+  .table-responsive {
+    max-height: 50vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -27,12 +61,12 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-left: 5px !important; 
-  margin-right: 5px !important; 
+  margin-left: 5px !important;
+  margin-right: 5px !important;
 }
 
 .pagination {
-  margin: 0; 
+  margin: 0;
 }
 
 .page-item {
@@ -40,13 +74,13 @@ html, body {
 }
 
 .page-link {
-  padding: 0.375rem 0.75rem; 
-  border-radius: 0.375rem; 
-  color: #0d6efd; 
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  color: #0d6efd;
   background-color: #fff;
   border: 1px solid #dee2e6;
   transition: background-color 0.2s, color 0.2s;
-  font-size: 0.875rem; 
+  font-size: 0.875rem;
 }
 
 .page-link:hover {
@@ -55,7 +89,7 @@ html, body {
 }
 
 .page-item.active .page-link {
-  background-color: #0d6efd; 
+  background-color: #0d6efd;
   color: white;
   border-color: #0d6efd;
 }
@@ -68,14 +102,14 @@ html, body {
 }
 
 .navbar .dropdown-item.btn-danger {
-  background-color: #dc3545 !important; 
+  background-color: #dc3545 !important;
   color: white !important;
   border: none;
-  padding: 0.375rem 0.75rem; 
+  padding: 0.375rem 0.75rem;
 }
 
 .navbar .dropdown-item.btn-danger:hover {
-  background-color: #c82333 !important; 
+  background-color: #c82333 !important;
   color: white !important;
 }
 
@@ -87,8 +121,7 @@ main {
 }
 
 .navbar.navbar-expand-lg.navbar-light {
-  background-color: #f0f2f5 !important; /* Un gris clarito diferente */
-  // background-color: #f8f9fa !important; /* Gris claro */
+  background-color: #f0f2f5 !important;
   border-bottom: 1px solid #dee2e6 !important;
 }
 
@@ -101,4 +134,40 @@ main {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .table {
+    font-size: 0.85rem;
+  }
+  .table th, .table td {
+    padding: 0.5rem;
+  }
+}
+
+.table .actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.table .actions .btn,
+.table .actions .btn.btn-sm,
+.table .actions form .btn.btn-sm {
+  flex: 1;
+  text-align: center;
+  padding: 0.375rem 0.5rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.table .actions form {
+  flex: 1;
+  margin: 0;
 }

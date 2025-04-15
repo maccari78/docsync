@@ -3,6 +3,9 @@
     <h1>Patient Details</h1>
     <div class="d-flex gap-2">
       <%= link_to 'Edit Patient', edit_patient_path(@patient), class: 'btn btn-warning' %>
+      <% if admin? %>
+        <%= button_to 'Delete Patient', patient_path(@patient), method: :delete, form: { data: { turbo_confirm: 'Are you sure?' } }, class: "btn btn-danger" %>
+      <% end %>
       <%= link_to 'Back to Patients', patients_path, class: 'btn btn-secondary' %>
     </div>
   </div>

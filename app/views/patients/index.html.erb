@@ -26,37 +26,36 @@
   <% end %>
 
   <% if @patients.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Professional</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patients.each do |patient| %>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td><%= "#{patient.first_name} #{patient.last_name}" %></td>
-            <td><%= patient.email %></td>
-            <td><%= patient.phone %></td>
-            <td><%= "#{patient.professional.first_name} #{patient.professional.last_name}" if patient.professional %></td>
-            <td>
-              <div class="d-flex gap-2">
-                <%= link_to 'Show', patient_path(patient), class: "btn btn-info btn-sm" %>
-                <%= link_to 'Edit', edit_patient_path(patient), class: 'btn btn-warning btn-sm' %>
-                <% if admin? %>
-                  <%= button_to 'Delete', patient_path(patient), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
-                <% end %>
-              </div>
-            </td>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Professional</th>
+            <th>Actions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    
+        </thead>
+        <tbody>
+          <% @patients.each do |patient| %>
+            <tr>
+              <td><%= "#{patient.first_name} #{patient.last_name}" %></td>
+              <td><%= patient.email %></td>
+              <td><%= patient.phone %></td>
+              <td><%= "#{patient.professional.first_name} #{patient.professional.last_name}" if patient.professional %></td>
+              <td class="actions">
+                <%= link_to 'Show', patient_path(patient), class: "btn btn-info btn-sm" %>
+                <%= link_to 'Edit', edit_patient_path(patient), class: "btn btn-warning btn-sm" %>
+                <% if admin? %>
+                  <%= link_to 'Delete', patient_path(patient), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>  
   <% else %>
     <p>No patients found.</p>
   <% end %>

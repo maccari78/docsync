@@ -65,5 +65,3 @@ La idea es terminar todos estos pendientes antes de 2025-04-15 (a un mes justo d
 El MVP ya esta completo. La idea es trabajar a partir de alli sin hacer grandes cambios en la base, a menos que sean extrictamente necesario, que anda bien sino sumar caracteristicas.
 
 -----------
-# Test
-# Test deploy Mon Apr 14 05:15:25 PM -03 2025

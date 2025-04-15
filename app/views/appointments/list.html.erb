@@ -43,39 +43,40 @@
   <% end %>
 
   <% if @appointments.any? %>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Patient</th>
-          <th>Professional</th>
-          <th>Clinic</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @appointments.each do |appointment| %>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td><%= appointment.date %></td>
-            <td><%= appointment.time.strftime('%H:%M') %></td>
-            <td><%= appointment.patient&.name || 'N/A' %></td>
-            <td><%= appointment.professional&.user&.name || 'N/A' %></td>
-            <td><%= appointment.clinic&.name || 'N/A' %></td>
-            <td><%= appointment.status.humanize.capitalize %></td>
-            <td>
-              <%= link_to 'Show', appointment_path(appointment), class: "btn btn-sm btn-info" %>
-              <%= link_to 'Edit', edit_appointment_path(appointment), class: "btn btn-sm btn-warning" %>
-              <% if current_user.admin? || current_user.professional? || current_user.secretary? %>
-                <%= link_to 'Delete', appointment_path(appointment), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
-              <% end %>
-            </td>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Professional</th>
+            <th>Clinic</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    
+        </thead>
+        <tbody>
+          <% @appointments.each do |appointment| %>
+            <tr>
+              <td><%= appointment.date %></td>
+              <td><%= appointment.time.strftime('%H:%M') %></td>
+              <td><%= appointment.patient&.name || 'N/A' %></td>
+              <td><%= appointment.professional&.user&.name || 'N/A' %></td>
+              <td><%= appointment.clinic&.name || 'N/A' %></td>
+              <td><%= appointment.status.humanize.capitalize %></td>
+              <td class="actions">
+                <%= link_to 'Show', appointment_path(appointment), class: "btn btn-sm btn-info" %>
+                <%= link_to 'Edit', edit_appointment_path(appointment), class: "btn btn-sm btn-warning" %>
+                <% if current_user.admin? || current_user.professional? || current_user.secretary? %>
+                  <%= link_to 'Delete', appointment_path(appointment), method: :delete, data: { turbo_confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>  
   <% else %>
     <p>No appointments found.</p>
   <% end %>
