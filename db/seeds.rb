@@ -76,7 +76,7 @@ patients_clinic1 = []
       first_name: patient_user.first_name,
       last_name: patient_user.last_name,
       email: patient_user.email,
-      professional: dentist.user,  # Cambiado de dentist a dentist.user
+      professional: dentist.user,
       phone: "11#{rand(10000000..99999999)}"
     )
     patients_clinic1 << { patient: patient, dentist: dentist }
@@ -120,7 +120,7 @@ num_patients.times do |i|
     first_name: patient_user.first_name,
     last_name: patient_user.last_name,
     email: patient_user.email,
-    professional: dentist4.user,  # Cambiado de dentist4 a dentist4.user
+    professional: dentist4.user,
     phone: "11#{rand(10000000..99999999)}"
   )
   patients_clinic2 << { patient: patient, dentist: dentist4 }
@@ -153,14 +153,137 @@ num_patients.times do |i|
     first_name: patient_user.first_name,
     last_name: patient_user.last_name,
     email: patient_user.email,
-    professional: dentist5.user,  # Cambiado de dentist5 a dentist5.user
+    professional: dentist5.user,
     phone: "11#{rand(10000000..99999999)}"
   )
   patients_clinic3 << { patient: patient, dentist: dentist5 }
 end
 
+puts "Creating Clinic 4: Centro Médico Integral..."
+clinic4 = Clinic.create!(name: "Centro Médico Integral", address: "Sarmiento 101, Bahia Blanca")
+
+general_practitioner_user = User.create!(
+  email: "dr.gonzalez@example.com",
+  password: "password123",
+  role: :professional,
+  first_name: "Elena",
+  last_name: "González",
+  clinic: clinic4
+)
+general_practitioner = Professional.create!(user: general_practitioner_user, specialty: "general_practice", clinic: clinic4, license_number: "LIC11223")
+
+cardiologist_user = User.create!(
+  email: "dr.perez@example.com",
+  password: "password123",
+  role: :professional,
+  first_name: "Andrés",
+  last_name: "Pérez",
+  clinic: clinic4
+)
+cardiologist = Professional.create!(user: cardiologist_user, specialty: "cardiology", clinic: clinic4, license_number: "LIC33445")
+
+pediatrician_user = User.create!(
+  email: "dr.ramirez@example.com",
+  password: "password123",
+  role: :professional,
+  first_name: "Sofía",
+  last_name: "Ramírez",
+  clinic: clinic4
+)
+pediatrician = Professional.create!(user: pediatrician_user, specialty: "pediatrics", clinic: clinic4, license_number: "LIC55667")
+
+secretary4_user = User.create!(
+  email: "secretary.integral@example.com",
+  password: "password123",
+  role: :secretary,
+  first_name: "Carolina",
+  last_name: "Ruiz",
+  clinic: clinic4
+)
+ProfessionalsSecretary.create!(professional: general_practitioner, secretary: secretary4_user)
+ProfessionalsSecretary.create!(professional: cardiologist, secretary: secretary4_user)
+ProfessionalsSecretary.create!(professional: pediatrician, secretary: secretary4_user)
+
+patients_clinic4 = []
+[general_practitioner, cardiologist, pediatrician].each_with_index do |professional, professional_index|
+  num_patients = rand(10..15)
+  num_patients.times do |i|
+    patient_user = User.create!(
+      email: "patient_c4_p#{professional_index + 1}_#{i + 1}@example.com",
+      password: "password123",
+      role: :patient,
+      first_name: ["Lucía", "Martín", "Sofía", "Juan", "Ana", "Pedro", "Clara", "Diego", "Valeria", "Mateo"].sample,
+      last_name: ["Gómez", "Rodríguez", "Fernández", "López", "Martínez", "Pérez", "García", "Sánchez", "Romero", "Díaz"].sample
+    )
+    patient = Patient.create!(
+      first_name: patient_user.first_name,
+      last_name: patient_user.last_name,
+      email: patient_user.email,
+      professional: professional.user,
+      phone: "11#{rand(10000000..99999999)}"
+    )
+    patients_clinic4 << { patient: patient, professional: professional }
+  end
+end
+
+puts "Creating Clinic 5: Clínica Salud Total..."
+clinic5 = Clinic.create!(name: "Clínica Salud Total", address: "Belgrano 202, Bahia Blanca")
+
+neurologist_user = User.create!(
+  email: "dr.torres@example.com",
+  password: "password123",
+  role: :professional,
+  first_name: "Miguel",
+  last_name: "Torres",
+  clinic: clinic5
+)
+neurologist = Professional.create!(user: neurologist_user, specialty: "neurology", clinic: clinic5, license_number: "LIC77889")
+
+dermatologist_user = User.create!(
+  email: "dr.molina@example.com",
+  password: "password123",
+  role: :professional,
+  first_name: "Valentina",
+  last_name: "Molina",
+  clinic: clinic5
+)
+dermatologist = Professional.create!(user: dermatologist_user, specialty: "dermatology", clinic: clinic5, license_number: "LIC99001")
+
+secretary5_user = User.create!(
+  email: "secretary.salud@example.com",
+  password: "password123",
+  role: :secretary,
+  first_name: "Beatriz",
+  last_name: "Ortiz",
+  clinic: clinic5
+)
+ProfessionalsSecretary.create!(professional: neurologist, secretary: secretary5_user)
+ProfessionalsSecretary.create!(professional: dermatologist, secretary: secretary5_user)
+
+patients_clinic5 = []
+[neurologist, dermatologist].each_with_index do |professional, professional_index|
+  num_patients = rand(10..15)
+  num_patients.times do |i|
+    patient_user = User.create!(
+      email: "patient_c5_p#{professional_index + 1}_#{i + 1}@example.com",
+      password: "password123",
+      role: :patient,
+      first_name: ["Lucía", "Martín", "Sofía", "Juan", "Ana", "Pedro", "Clara", "Diego", "Valeria", "Mateo"].sample,
+      last_name: ["Gómez", "Rodríguez", "Fernández", "López", "Martínez", "Pérez", "García", "Sánchez", "Romero", "Díaz"].sample
+    )
+    patient = Patient.create!(
+      first_name: patient_user.first_name,
+      last_name: patient_user.last_name,
+      email: patient_user.email,
+      professional: professional.user,
+      phone: "11#{rand(10000000..99999999)}"
+    )
+    patients_clinic5 << { patient: patient, professional: professional }
+  end
+end
+
 puts "Creating appointments..."
-all_patients = patients_clinic1 + patients_clinic2 + patients_clinic3
+all_patients = patients_clinic1 + patients_clinic2 + patients_clinic3 + patients_clinic4 + patients_clinic5
 
 start_date = Date.today
 business_days = []
@@ -177,15 +300,15 @@ available_hours = (9..18).to_a
 
 all_patients.each_with_index do |patient_data, index|
   patient = patient_data[:patient]
-  dentist = patient_data[:dentist]
-  clinic = dentist.clinic
+  professional = patient_data[:professional] || patient_data[:dentist] 
+  clinic = professional.clinic
 
   date = business_days[index % business_days.length]
   hour = available_hours[index % available_hours.length]
 
   Appointment.create!(
     patient: patient,
-    professional: dentist,
+    professional: professional,
     clinic: clinic,
     date: date,
     time: Time.now.change(hour: hour, min: 0),
@@ -194,7 +317,7 @@ all_patients.each_with_index do |patient_data, index|
 end
 
 puts "Seed data created successfully!"
-puts "Created 3 clinics, 5 dentists, 2 secretaries, #{all_patients.count} patients, and #{all_patients.count} appointments."
+puts "Created 5 clinics, 8 professionals, 3 secretaries, #{all_patients.count} patients, and #{all_patients.count} appointments."
 puts "Admin user: admin@example.com / password123"
-puts "Dentists: dr.alvarez@example.com, dr.sanchez@example.com, dr.lopez@example.com, dr.smith@example.com, dr.martinez@example.com / password123"
-puts "Secretaries: secretary.sol@example.com, secretary.sonrisa@example.com / password123"
+puts "Professionals: dr.alvarez@example.com, dr.sanchez@example.com, dr.lopez@example.com, dr.smith@example.com, dr.martinez@example.com, dr.gonzalez@example.com, dr.perez@example.com, dr.ramirez@example.com, dr.torres@example.com, dr.molina@example.com / password123"
+puts "Secretaries: secretary.sol@example.com, secretary.sonrisa@example.com, secretary.integral@example.com, secretary.salud@example.com / password123"
