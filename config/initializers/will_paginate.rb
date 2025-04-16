@@ -5,13 +5,15 @@ module WillPaginate
     def will_paginate(collection = nil, options = {})
       options = options.merge(
         renderer: WillPaginate::ActionView::BootstrapLinkRenderer,
-        class: 'pagination justify-content-center'
+        class: 'pagination justify-content-center',
+        inner_window: 1, 
+        outer_window: 1  
       )
       super(collection, options)
     end
 
-    class BootstrapLinkRenderer < LinkRenderer
-      protected
+    class BootstrapLinkRenderer < LinkRenderer 
+      public
 
       def html_container(html)
         tag(:nav, tag(:ul, html, class: 'pagination mt-4'))
