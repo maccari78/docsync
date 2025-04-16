@@ -4,14 +4,15 @@
     <div class="d-flex gap-2">
       <% if current_user.admin? %>
         <%= link_to "Deleted Appointments", deleted_appointments_path, class: "btn btn-secondary" %>
-        <% end %>
-        <% if current_user.admin? || current_user.professional? || current_user.secretary? %>
+      <% end %>
+      <% if current_user.admin? || current_user.professional? || current_user.secretary? %>
         <%= link_to "Appointments List", list_appointments_path, class: "btn btn-secondary" %>
+      <% end %>
+      <% if current_user.admin? || current_user.professional? || current_user.secretary? || current_user.patient? %>
         <%= link_to "New Appointment", new_appointment_path, class: "btn btn-primary" %>
       <% end %>
     </div>
   </div>
 
-  <!-- Solo el calendario -->
   <div id="calendar" class="flex-grow-1" style="max-height: 80vh; overflow-y: auto;" data-user-role="<%= @user_role %>"></div>
 </div>

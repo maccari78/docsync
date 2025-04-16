@@ -90,19 +90,95 @@ class AppointmentsController < ApplicationController
 
   def show; end
 
+  def debug_patient_professional_relation
+    return unless patient?
+
+    patient = Patient.find_by(email: current_user.email)
+
+    Rails.logger.debug { '=== DEBUG PATIENT-PROFESSIONAL RELATION ===' }
+    Rails.logger.debug { "Patient: #{patient.inspect}" }
+    Rails.logger.debug { "Patient ID: #{patient&.id}" }
+    Rails.logger.debug { "Professional ID from patient: #{patient&.professional_id}" }
+
+    if patient&.professional_id.present?
+      professional = Professional.find_by(id: patient.professional_id)
+      Rails.logger.debug { "Professional found: #{professional.present?}" }
+      Rails.logger.debug { "Professional: #{professional&.inspect}" }
+    else
+      Rails.logger.debug { 'No professional_id found for patient' }
+    end
+
+    Rails.logger.debug { '=== END DEBUG ===' }
+  end
+
   def new
     @appointment = Appointment.new(date: params[:date])
+    if patient?
+      patient = Patient.find_by(email: current_user.email)
+      if patient
+        @appointment.patient_id = patient.id
+
+        professional = Professional.find_by(user_id: patient.professional_id)
+        if professional
+          @appointment.professional_id = professional.id
+          @appointment.clinic_id = professional.clinic_id
+          @appointment.status = 'pending'
+          @available_times = available_times_for_professional(professional, @appointment.date)
+        else
+          @available_times = []
+          flash.now[:alert] = 'No tienes un profesional asignado. Por favor contacta a la clínica.'
+        end
+      else
+        redirect_to appointments_path, alert: 'No patient profile found.'
+        nil
+      end
+    else
+      @available_times = []
+    end
   end
 
   def edit; end
 
   def create
     @appointment = Appointment.new(appointment_params)
-    @appointment.status ||= 'pending'
-    @appointment.professional = current_professional if professional?
+
+    if patient?
+      patient = Patient.find_by(email: current_user.email)
+      if patient
+        @appointment.patient_id = patient.id
+
+        professional = Professional.find_by(user_id: patient.professional_id)
+        if professional
+          @appointment.professional_id = professional.id
+          @appointment.clinic_id = professional.clinic_id
+          @appointment.status = 'pending'
+        else
+          @available_times = []
+          @appointment.errors.add(:base, 'No tienes un profesional asignado. Por favor contacta a la clínica.')
+          render :new, status: :unprocessable_entity
+          return
+        end
+      end
+    elsif professional?
+      @appointment.professional_id = current_professional.id
+    end
+
     if @appointment.save
       redirect_to appointments_path, notice: 'Appointment created successfully.'
     else
+      if patient?
+        patient = Patient.find_by(email: current_user.email)
+        if patient
+          professional = Professional.find_by(user_id: patient.professional_id)
+          @available_times = available_times_for_professional(professional, @appointment.date) || []
+        else
+          @available_times = []
+        end
+      else
+        @available_times = []
+      end
+
+      Rails.logger.debug { "Appointment errors: #{@appointment.errors.full_messages}" }
       render :new, status: :unprocessable_entity
     end
   end
@@ -181,7 +257,7 @@ class AppointmentsController < ApplicationController
       return
     end
 
-    amount = 1000 
+    amount = 1000
     Rails.logger.info "Creating payment with amount: #{amount}"
 
     payment = @appointment.payment || @appointment.create_payment!(
@@ -279,7 +355,8 @@ class AppointmentsController < ApplicationController
     if @appointment.payment&.approved?
       redirect_to appointment_path(@appointment), notice: 'Payment successful!'
     else
-      redirect_to appointment_path(@appointment), alert: 'The payment is being processed. We will notify you when it is complete.'
+      redirect_to appointment_path(@appointment),
+                  alert: 'The payment is being processed. We will notify you when it is complete.'
     end
   end
 
@@ -316,8 +393,16 @@ class AppointmentsController < ApplicationController
   end
 
   def appointment_params
-    params.require(:appointment).permit(:patient_id, :professional_id, :clinic_id, :date, :time, :status,
-                                        :treatment_details)
+    permitted_params = params.require(:appointment).permit(:patient_id, :professional_id, :clinic_id, :date, :time,
+                                                           :status, :treatment_details)
+    if permitted_params[:time].present? && patient?
+      permitted_params[:time] = begin
+        Time.zone.parse(permitted_params[:time])
+      rescue StandardError
+        permitted_params[:time]
+      end
+    end
+    permitted_params
   end
 
   def ensure_admin
@@ -330,6 +415,29 @@ class AppointmentsController < ApplicationController
   def restrict_patient_actions
     return unless patient?
 
-    redirect_to appointments_path, alert: 'Patients cannot perform this action.'
+    redirect_to appointments_path, alert: 'Patients cannot perform this action.' if %w[edit update
+                                                                                       destroy].include?(action_name)
+  end
+
+  def available_times_for_professional(professional, date)
+    return [] unless professional && date
+
+    start_time = Time.parse('09:00')
+    end_time = Time.parse('17:00')
+    interval = 30.minutes
+    all_times = []
+
+    current_time = start_time
+    while current_time <= end_time
+      all_times << current_time
+      current_time += interval
+    end
+
+    booked_times = Appointment.where(professional_id: professional.id, date: date)
+                              .where(deleted_at: nil)
+                              .pluck(:time)
+                              .map { |t| t.strftime('%H:%M') }
+
+    all_times.reject { |time| booked_times.include?(time.strftime('%H:%M')) }
   end
 end
