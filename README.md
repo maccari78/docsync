@@ -64,6 +64,6 @@ DocSync es una app de gestión de Clínicas odontológicas (en principio), ínte
 La idea es terminar todos estos pendientes antes de 2025-04-15 (a un mes justo desde el comienzo), lo crees posible?
 El MVP ya esta completo. La idea es trabajar a partir de alli sin hacer grandes cambios en la base, a menos que sean extrictamente necesario, que anda bien sino sumar caracteristicas.
 
-# Completos: 01, 02, 06, 08
+# Completos: 01, 02, 04, 05, 06, 08
 
 -----------
