@@ -8,9 +8,15 @@ class AdminDashboardsController < ApplicationController
     @total_clinics = Clinic.count
     @total_professionals = Professional.count
     @total_secretaries = User.where(role: :secretary).count
-
-    # Estadísticas por clínica
-    @appointments_by_clinic = Appointment.joins(:clinic).group('clinics.name').count
+    @appointments_by_status = Appointment.group(:status).count
+    @recent_appointments = Appointment.where(created_at: 7.days.ago..Time.now).count
+    @new_patients = Patient.where(created_at: 1.month.ago..Time.now).count
+    scope = Appointment.joins(:clinic)
+    scope = scope.where(clinic_id: params[:clinic_id]) if params[:clinic_id].present?
+    if params[:start_date].present? && params[:end_date].present?
+      scope = scope.where(created_at: params[:start_date]..params[:end_date])
+    end
+    @appointments_by_clinic = scope.group('clinics.name').count
   end
 
   private

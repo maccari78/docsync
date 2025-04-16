@@ -1,64 +1,188 @@
 <div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
-  <h1>Admin Dashboard</h1>
+  <h1 class="mb-4">Admin Dashboard</h1>
 
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card mb-4">
+  <%= form_with url: admin_dashboards_path, method: :get, local: true, class: "mb-4" do |form| %>
+    <div class="row g-2 align-items-end">
+      <div class="col">
+        <%= form.label :clinic_id, "Filter by Clinic", class: "form-label" %>
+        <%= form.select :clinic_id, Clinic.all.pluck(:name, :id), { include_blank: "All Clinics" }, class: "form-select" %>
+      </div>
+      <div class="col">
+        <%= form.label :start_date, "Start Date", class: "form-label" %>
+        <%= form.date_field :start_date, value: params[:start_date], class: "form-control" %>
+      </div>
+      <div class="col">
+        <%= form.label :end_date, "End Date", class: "form-label" %>
+        <%= form.date_field :end_date, value: params[:end_date], class: "form-control" %>
+      </div>
+      <div class="col-auto ms-auto">
+        <div class="d-flex gap-2">
+          <%= form.submit "Apply Filters", class: "btn btn-primary" %>
+          <%= link_to "Clear Filters", admin_dashboards_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="d-none d-md-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+    <div class="col">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">Total Appointments</h5>
-          <p class="card-text"><%= @total_appointments %></p>
+          <p class="card-text text-center fs-4"><%= @total_appointments %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card mb-4">
+    <div class="col">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">Total Patients</h5>
-          <p class="card-text"><%= @total_patients %></p>
+          <p class="card-text text-center fs-4"><%= @total_patients %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card mb-4">
+    <div class="col">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">Total Clinics</h5>
-          <p class="card-text"><%= @total_clinics %></p>
+          <p class="card-text text-center fs-4"><%= @total_clinics %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card mb-4">
+    <div class="col">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">Total Professionals</h5>
-          <p class="card-text"><%= @total_professionals %></p>
+          <p class="card-text text-center fs-4"><%= @total_professionals %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card mb-4">
+    <div class="col">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">Total Secretaries</h5>
-          <p class="card-text"><%= @total_secretaries %></p>
+          <p class="card-text text-center fs-4"><%= @total_secretaries %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Recent Appointments (Last 7 Days)</h5>
+          <p class="card-text text-center fs-4"><%= @recent_appointments %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">New Patients (Last 30 Days)</h5>
+          <p class="card-text text-center fs-4"><%= @new_patients %></p>
         </div>
       </div>
     </div>
   </div>
-
-  <h2>Appointments by Clinic</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Clinic</th>
-        <th>Total Appointments</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @appointments_by_clinic.each do |clinic_name, count| %>
-        <tr>
-          <td><%= clinic_name %></td>
-          <td><%= count %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="row g-4 mb-4">
+  <!-- Appointments by Clinic (tabla) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h6 class="mb-0">Appointments by Clinic</h6>
+      </div>
+      <div class="card-body p-3">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Clinic</th>
+              <th class="text-end">Total Appointments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @appointments_by_clinic.each do |clinic_name, count| %>
+              <tr>
+                <td><%= clinic_name %></td>
+                <td class="text-end"><%= count %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Appointments by Status (listado) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h6 class="mb-0">Appointments by Status</h6>
+      </div>
+      <div class="card-body p-3">
+        <ul class="list-group list-group-flush">
+          <% @appointments_by_status.each do |status, count| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><%= status %></span>
+              <span class="badge bg-secondary rounded-pill"><%= count %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Appointments by Clinic (Chart) -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h6 class="mb-0">Appointments by Clinic (Chart)</h6>
+      </div>
+      <div class="card-body">
+        <canvas id="appointmentsByClinicChart" style="height: 250px; max-height: 300px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('appointmentsByClinicChart');
+      if (ctx) {
+        const appointmentsByClinic = <%= raw @appointments_by_clinic.to_json %>;
+        if (appointmentsByClinic && Object.keys(appointmentsByClinic).length > 0) {
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: Object.keys(appointmentsByClinic).map(label => label.split(' ')),
+              datasets: [{
+                label: 'Total Appointments',
+                data: Object.values(appointmentsByClinic),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                x: {
+                  ticks: {
+                    callback: function(value, index) {
+                      const label = this.getLabelForValue(index);
+                      return Array.isArray(label) ? label : [label];
+                    }
+                  }
+                },
+                y: {
+                  beginAtZero: true
+                }
+              },
+              plugins: {
+                legend: {
+                  display: true
+                }
+              }
+            }
+          });
+        } else {
+          ctx.style.display = 'none';
+        }
+      }
+    });
+  </script>
 </div>
