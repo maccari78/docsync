@@ -3,6 +3,7 @@ class Clinic < ApplicationRecord
   has_many :professionals, dependent: :destroy, inverse_of: :clinic
   has_many :secretaries, -> { where(role: :secretary) }, class_name: "User", inverse_of: :clinic
   has_many :appointments, dependent: :destroy, inverse_of: :clinic
+  has_many :medical_supplies, dependent: :destroy, inverse_of: :clinic
 
   def professional_users
     users.where(role: :professional)

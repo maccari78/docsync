@@ -1,0 +1,43 @@
+<%= form_with(model: medical_supply, local: true, id: "medical-supply-form") do |form| %>
+  <% if medical_supply.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(medical_supply.errors.count, "error") %> prohibited this medical supply from being saved:</h4>
+      <ul>
+        <% medical_supply.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field mb-3">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :description %>
+    <%= form.text_area :description, class: "form-control" %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :stock_quantity %>
+    <%= form.number_field :stock_quantity, class: "form-control", min: 0 %>
+  </div>
+
+  <div class="field mb-3">
+    <%= form.label :minimum_stock %>
+    <%= form.number_field :minimum_stock, class: "form-control", min: 0 %>
+  </div>
+
+  <% if admin? %>
+    <div class="field mb-3">
+      <%= form.label :clinic_id %>
+      <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { prompt: "Select a clinic" }, class: "form-control" %>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

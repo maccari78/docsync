@@ -1,0 +1,70 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Supplies</h1>
+    <%= will_paginate @medical_supplies %>
+    <%= link_to 'New Medical Supply', new_medical_supply_path, class: 'btn btn-primary' %>
+  </div>
+
+  <div class="filter-wrapper px-0">
+    <%= form_with url: medical_supplies_path, method: :get, local: true, class: 'mb-3 filter-form' do |form| %>
+      <div class="row g-3">
+        <div class="col-md-5 col-12">
+          <%= form.text_field :name, value: params[:name], class: 'form-control', placeholder: 'Search by Name' %>
+        </div>
+        <% if admin? %>
+          <div class="col-md-5 col-12">
+            <%= form.collection_select :clinic_id, Clinic.all, :id, :name, { prompt: 'Filter by Clinic' }, class: 'form-select' %>
+          </div>
+        <% end %>
+        <div class="col-md-2 col-12 d-flex align-items-end">
+          <%= form.submit 'Filter', class: 'btn btn-primary me-2 w-100' %>
+          <%= link_to 'Clear', medical_supplies_path, class: 'btn btn-secondary w-100' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @medical_supplies.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Stock Quantity</th>
+            <th>Minimum Stock</th>
+            <th>Status</th>
+            <th>Clinic</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @medical_supplies.each do |supply| %>
+            <tr>
+              <td><%= supply.name %></td>
+              <td><%= supply.description %></td>
+              <td><%= supply.stock_quantity %></td>
+              <td><%= supply.minimum_stock %></td>
+              <td>
+                <% if supply.low_stock? %>
+                  <span class="badge bg-danger">Low Stock</span>
+                <% else %>
+                  <span class="badge bg-success">In Stock</span>
+                <% end %>
+              </td>
+              <td><%= supply.clinic.name %></td>
+              <td class="actions">
+                <%= link_to "Show", medical_supply_path(supply), class: "btn btn-info btn-sm" %>
+                <%= link_to "Edit", edit_medical_supply_path(supply), class: "btn btn-warning btn-sm" %>
+                <%= link_to "Delete", medical_supply_path(supply), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+  <% else %>
+    <p>No medical supplies found.</p>
+  <% end %>
+</div>

@@ -27,6 +27,14 @@ Rails.application.routes.draw do
       get 'failure', to: 'appointments#failure'
     end
   end
+
+  resources :medical_supplies do
+    member do
+      post :add_stock
+      post :remove_stock
+    end
+  end
+
   post '/stripe/webhook', to: 'appointments#payment_notification'
 
   get '/debug/appointments', to: 'debug#appointments'

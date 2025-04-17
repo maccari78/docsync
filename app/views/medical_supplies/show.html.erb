@@ -1,0 +1,43 @@
+<div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Supply Details</h1>
+    <div class="d-flex gap-2">
+      <%= link_to 'Edit Supply', edit_medical_supply_path(@medical_supply), class: 'btn btn-warning' %>
+      <%= button_to 'Delete Supply', medical_supply_path(@medical_supply), method: :delete, form: { data: { turbo_confirm: 'Are you sure?' } }, class: "btn btn-danger" %>
+      <%= link_to 'Back to Supplies', medical_supplies_path, class: 'btn btn-secondary' %>
+    </div>
+  </div>
+
+  <p><strong>Name:</strong> <%= @medical_supply.name %></p>
+  <p><strong>Description:</strong> <%= @medical_supply.description %></p>
+  <p><strong>Stock Quantity:</strong> <%= @medical_supply.stock_quantity %></p>
+  <p><strong>Minimum Stock:</strong> <%= @medical_supply.minimum_stock %></p>
+  <p><strong>Clinic:</strong> <%= @medical_supply.clinic.name %></p>
+  <p><strong>Status:</strong>
+    <% if @medical_supply.low_stock? %>
+      <span class="badge bg-danger">Low Stock</span>
+    <% else %>
+      <span class="badge bg-success">In Stock</span>
+    <% end %>
+  </p>
+
+  <h3>Update Stock</h3>
+  <div class="row">
+    <div class="col-md-6">
+      <%= form_with url: add_stock_medical_supply_path(@medical_supply), local: true, method: :post do |form| %>
+        <div class="input-group mb-3">
+          <%= form.number_field :quantity, class: "form-control", placeholder: "Enter quantity to add", min: 1 %>
+          <%= form.submit "Add Stock", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-md-6">
+      <%= form_with url: remove_stock_medical_supply_path(@medical_supply), local: true, method: :post do |form| %>
+        <div class="input-group mb-3">
+          <%= form.number_field :quantity, class: "form-control", placeholder: "Enter quantity to remove", min: 1 %>
+          <%= form.submit "Remove Stock", class: "btn btn-danger" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

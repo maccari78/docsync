@@ -1,19 +1,15 @@
 <div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
   <h1 class="mb-4">Admin Dashboard</h1>
-
   <%= form_with url: admin_dashboards_path, method: :get, local: true, class: "mb-4" do |form| %>
     <div class="row g-2 align-items-end">
       <div class="col">
-        <%= form.label :clinic_id, "Filter by Clinic", class: "form-label" %>
-        <%= form.select :clinic_id, Clinic.all.pluck(:name, :id), { include_blank: "All Clinics" }, class: "form-select" %>
+        <%= form.select :clinic_id, Clinic.all.pluck(:name, :id), { include_blank: "Filter by Clinic" }, class: "form-select" %>
       </div>
       <div class="col">
-        <%= form.label :start_date, "Start Date", class: "form-label" %>
-        <%= form.date_field :start_date, value: params[:start_date], class: "form-control" %>
+        <%= form.date_field :start_date, value: params[:start_date], class: "form-control date-field", id: "start-date" %>
       </div>
       <div class="col">
-        <%= form.label :end_date, "End Date", class: "form-label" %>
-        <%= form.date_field :end_date, value: params[:end_date], class: "form-control" %>
+        <%= form.date_field :end_date, value: params[:end_date], class: "form-control date-field", id: "end-date" %>
       </div>
       <div class="col-auto ms-auto">
         <div class="d-flex gap-2">
@@ -23,7 +19,6 @@
       </div>
     </div>
   <% end %>
-
   <div class="d-none d-md-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
     <div class="col">
       <div class="card h-100">
@@ -81,108 +76,166 @@
         </div>
       </div>
     </div>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Medical Supplies</h5>
+          <p class="card-text text-center fs-4"><%= @total_medical_supplies %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Low Stock Supplies</h5>
+          <p class="card-text text-center fs-4"><%= @low_stock_supplies %></p>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row g-4 mb-4">
-  <!-- Appointments by Clinic (tabla) -->
-  <div class="col-md-4">
-    <div class="card h-100">
-      <div class="card-header">
-        <h6 class="mb-0">Appointments by Clinic</h6>
-      </div>
-      <div class="card-body p-3">
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Clinic</th>
-              <th class="text-end">Total Appointments</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @appointments_by_clinic.each do |clinic_name, count| %>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h6 class="mb-0">Appointments by Clinic</h6>
+        </div>
+        <div class="card-body p-3">
+          <table class="table table-sm">
+            <thead>
               <tr>
-                <td><%= clinic_name %></td>
-                <td class="text-end"><%= count %></td>
+                <th>Clinic</th>
+                <th class="text-end">Total Appointments</th>
               </tr>
+            </thead>
+            <tbody>
+              <% @appointments_by_clinic.each do |clinic_name, count| %>
+                <tr>
+                  <td><%= clinic_name %></td>
+                  <td class="text-end"><%= count %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h6 class="mb-0">Appointments by Status</h6>
+        </div>
+        <div class="card-body p-3">
+          <ul class="list-group list-group-flush">
+            <% @appointments_by_status.each do |status, count| %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><%= status %></span>
+                <span class="badge bg-secondary rounded-pill"><%= count %></span>
+              </li>
             <% end %>
-          </tbody>
-        </table>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h6 class="mb-0">Appointments by Clinic (Chart)</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="appointmentsByClinicChart" style="height: 250px; max-height: 300px;"></canvas>
+        </div>
       </div>
     </div>
   </div>
-  <!-- Appointments by Status (listado) -->
-  <div class="col-md-4">
-    <div class="card h-100">
-      <div class="card-header">
-        <h6 class="mb-0">Appointments by Status</h6>
-      </div>
-      <div class="card-body p-3">
-        <ul class="list-group list-group-flush">
-          <% @appointments_by_status.each do |status, count| %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span><%= status %></span>
-              <span class="badge bg-secondary rounded-pill"><%= count %></span>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <!-- Appointments by Clinic (Chart) -->
-  <div class="col-md-4">
-    <div class="card h-100">
-      <div class="card-header">
-        <h6 class="mb-0">Appointments by Clinic (Chart)</h6>
-      </div>
-      <div class="card-body">
-        <canvas id="appointmentsByClinicChart" style="height: 250px; max-height: 300px;"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const ctx = document.getElementById('appointmentsByClinicChart');
-      if (ctx) {
-        const appointmentsByClinic = <%= raw @appointments_by_clinic.to_json %>;
-        if (appointmentsByClinic && Object.keys(appointmentsByClinic).length > 0) {
-          new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: Object.keys(appointmentsByClinic).map(label => label.split(' ')),
-              datasets: [{
-                label: 'Total Appointments',
-                data: Object.values(appointmentsByClinic),
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                x: {
-                  ticks: {
-                    callback: function(value, index) {
-                      const label = this.getLabelForValue(index);
-                      return Array.isArray(label) ? label : [label];
-                    }
+  document.addEventListener('DOMContentLoaded', function() {
+    // Placeholder personalizado para los campos de fecha
+    const startDateField = document.getElementById('start-date');
+    const endDateField = document.getElementById('end-date');
+
+    // Función para manejar el placeholder dinámico
+    function handleDatePlaceholder(field, placeholderText) {
+      // Si el campo está vacío, cambiar a tipo text y mostrar el placeholder
+      if (!field.value) {
+        field.type = 'text';
+        field.value = placeholderText;
+        field.style.color = '#6c757d'; // Gris similar al placeholder
+      }
+
+      // Cuando el usuario hace clic en el campo
+      field.addEventListener('focus', function() {
+        if (field.value === placeholderText) {
+          field.type = 'date'; // Cambia a tipo date para mostrar el selector
+          field.value = ''; // Limpia el placeholder
+          field.style.color = '#000'; // Color negro para la fecha seleccionada
+        }
+      });
+
+      // Cuando el usuario sale del campo
+      field.addEventListener('blur', function() {
+        if (!field.value) {
+          field.type = 'text';
+          field.value = placeholderText;
+          field.style.color = '#6c757d';
+        }
+      });
+
+      // Cuando el formulario se envía, asegurarse de que el valor sea válido
+      field.addEventListener('change', function() {
+        if (field.value === placeholderText) {
+          field.value = ''; // Limpia el valor si es el placeholder
+        }
+      });
+    }
+
+    // Aplicar el comportamiento a ambos campos
+    handleDatePlaceholder(startDateField, 'Start Date');
+    handleDatePlaceholder(endDateField, 'End Date');
+
+    // Gráfico de Appointments by Clinic
+    const ctxAppointments = document.getElementById('appointmentsByClinicChart');
+    if (ctxAppointments) {
+      const appointmentsByClinic = <%= raw @appointments_by_clinic.to_json %>;
+      if (appointmentsByClinic && Object.keys(appointmentsByClinic).length > 0) {
+        new Chart(ctxAppointments, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(appointmentsByClinic).map(label => label.split(' ')),
+            datasets: [{
+              label: 'Total Appointments',
+              data: Object.values(appointmentsByClinic),
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                ticks: {
+                  callback: function(value, index) {
+                    const label = this.getLabelForValue(index);
+                    return Array.isArray(label) ? label : [label];
                   }
-                },
-                y: {
-                  beginAtZero: true
                 }
               },
-              plugins: {
-                legend: {
-                  display: true
-                }
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: true
               }
             }
-          });
-        } else {
-          ctx.style.display = 'none';
-        }
+          }
+        });
+      } else {
+        ctxAppointments.style.display = 'none';
       }
-    });
+    }
+  });
   </script>
 </div>

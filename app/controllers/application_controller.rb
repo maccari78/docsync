@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
   before_action :restore_user_from_cookie, unless: :logout_action?
   before_action :log_session_data
   before_action :configure_permitted_parameters, if: :devise_controller?
-  # Desactiva CSRF para OmniAuth y Stripe webhook
   skip_before_action :verify_authenticity_token, if: :bypass_csrf_verification?
 
   protected
@@ -120,5 +119,11 @@ class ApplicationController < ActionController::Base
     reset_session
     flash[:alert] = 'Your session was invalid. Please sign in again.'
     redirect_to new_user_session_path
+  end
+
+  def require_admin_or_secretary!
+    unless admin? || secretary?
+      redirect_to root_path, alert: 'Access denied. Admins or secretaries only.'
+    end
   end
 end

@@ -85,7 +85,7 @@ class AppointmentsController < ApplicationController
       )
     end
 
-    @appointments = @appointments.paginate(page: params[:page], per_page: 10)
+    @appointments = @appointments.paginate(page: params[:page], per_page: 12)
   end
 
   def show; end

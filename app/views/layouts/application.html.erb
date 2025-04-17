@@ -36,7 +36,8 @@
                   { name: "Patients", path: patients_path, controller: "patients" },
                   { name: "Clinics", path: clinics_path, controller: "clinics" },
                   { name: "Professionals", path: professionals_path, controller: "professionals" },
-                  { name: "Secretaries", path: secretaries_path, controller: "secretaries" }
+                  { name: "Secretaries", path: secretaries_path, controller: "secretaries" },
+                  { name: "Supplies", path: medical_supplies_path, controller: "medical_supplies" }
                 ] %>
               <% professional_routes = [
                   { name: "Calendar", path: appointments_path, controller: "appointments" },
@@ -46,7 +47,8 @@
               <% secretary_routes = [
                   { name: "Calendar", path: appointments_path, controller: "appointments" },
                   { name: "Appointments", path: list_appointments_path, controller: "appointments" },
-                  { name: "Patients", path: patients_path, controller: "patients" }
+                  { name: "Patients", path: patients_path, controller: "patients" },
+                  { name: "Supplies", path: medical_supplies_path, controller: "medical_supplies" }
                 ] %>
               <% patient_routes = [
                   { name: "My Calendar", path: appointments_path, controller: "appointments" },
