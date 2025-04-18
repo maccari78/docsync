@@ -4,6 +4,7 @@ Appointment.delete_all
 ProfessionalsSecretary.delete_all
 Patient.delete_all
 Professional.delete_all
+MedicalSupply.delete_all
 User.delete_all
 Clinic.delete_all
 
