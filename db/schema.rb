@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_17_183707) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_19_124948) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "uuid-ossp"
@@ -68,6 +68,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_17_183707) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "conversations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "appointment_id", null: false
+    t.uuid "sender_id", null: false
+    t.uuid "receiver_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_conversations_on_appointment_id"
+    t.index ["receiver_id"], name: "index_conversations_on_receiver_id"
+    t.index ["sender_id"], name: "index_conversations_on_sender_id"
+  end
+
   create_table "medical_supplies", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -77,6 +88,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_17_183707) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["clinic_id"], name: "index_medical_supplies_on_clinic_id"
+  end
+
+  create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "conversation_id", null: false
+    t.uuid "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "patients", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -145,7 +166,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_17_183707) do
   add_foreign_key "appointments", "clinics"
   add_foreign_key "appointments", "patients"
   add_foreign_key "appointments", "professionals"
+  add_foreign_key "conversations", "appointments"
+  add_foreign_key "conversations", "users", column: "receiver_id"
+  add_foreign_key "conversations", "users", column: "sender_id"
   add_foreign_key "medical_supplies", "clinics"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
   add_foreign_key "patients", "users", column: "professional_id"
   add_foreign_key "payments", "appointments"
   add_foreign_key "professionals", "clinics"

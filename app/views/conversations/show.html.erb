@@ -1,0 +1,24 @@
+<div class="container mt-4">
+  <h1>Chat con <%= @conversation.sender == current_user ? @conversation.receiver.email : @conversation.sender.email %></h1>
+  <p>Turno: <%= @conversation.appointment.treatment_details %> - <%= @conversation.appointment.date.strftime('%d/%m/%Y') %></p>
+  <div class="card">
+    <div class="card-body" id="messages" style="max-height: 400px; overflow-y: auto;" data-current-user-email="<%= current_user.email %>">
+      <% @messages.each do |message| %>
+        <div id="message-<%= message.id %>" class="mb-2 <%= message.user == current_user ? 'text-end' : 'text-start' %>">
+          <strong><%= message.user&.email || 'Unknown User' %>:</strong> <%= message.content %>
+          <small class="text-muted">(<%= message.created_at&.strftime('%H:%M') || 'No Date' %>)</small>
+        </div>
+      <% end %>
+    </div>
+    <div class="card-footer">
+      <%= form_with model: @message, url: conversation_messages_path(@conversation), local: true do |f| %>
+        <div class="input-group">
+          <%= f.text_area :content, class: 'form-control', rows: 2, required: true %>
+          <%= f.submit 'Enviar', class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <%= link_to 'Back to Calendar', appointments_path, class: 'btn btn-secondary mt-3' %>
+</div>
+<meta name="conversation-id" content="<%= @conversation.id %>">

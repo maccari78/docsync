@@ -46,3 +46,7 @@ gem 'will_paginate-bootstrap', '~> 1.0'
 gem "rails-ujs"
 
 gem 'ruby-vips'
+
+gem 'actioncable'
+
+gem 'redis'

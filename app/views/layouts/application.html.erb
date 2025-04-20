@@ -6,7 +6,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
     <%= favicon_link_tag asset_path('favicon.ico') %>
 
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js"></script>
@@ -15,14 +16,14 @@
 
     <style>
       df-messenger {
-        --df-messenger-button-titlebar-color: #007bff; /* Azul de Bootstrap */
+        --df-messenger-button-titlebar-color: #007bff;
         --df-messenger-font-color: #000;
         --df-messenger-input-box-color: #fff;
         --df-messenger-input-font-color: #000;
       }
     </style>
   </head>
-  <body>
+  <body data-turbo="false">
     <nav class="navbar navbar-expand-lg navbar-light shadow">
       <div class="container-fluid">
         <%= link_to root_path, class: "navbar-brand" do %>

@@ -35,6 +35,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :conversations, only: [:show] do
+    resources :messages, only: [:create]
+  end 
+
   post '/stripe/webhook', to: 'appointments#payment_notification'
 
   get '/debug/appointments', to: 'debug#appointments'

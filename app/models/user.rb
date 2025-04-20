@@ -27,6 +27,9 @@ class User < ApplicationRecord
   has_many :patients_as_professional, through: :professional, source: :patients
   has_many :professionals_secretaries, foreign_key: :secretary_id, dependent: :destroy
   has_many :professionals, through: :professionals_secretaries
+  has_many :sent_conversations, class_name: 'Conversation', foreign_key: 'sender_id' 
+  has_many :received_conversations, class_name: 'Conversation', foreign_key: 'receiver_id' 
+  has_many :messages 
 
   enum :role, { patient: 0, secretary: 1, professional: 2, admin: 3 }, default: :patient
 
