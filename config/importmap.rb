@@ -6,3 +6,4 @@ pin "@rails/ujs", to: "rails-ujs.js"
 pin "@rails/actioncable", to: "actioncable.esm.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 pin_all_from "app/javascript/channels", under: "channels"
+pin "channels/consumer", to: "channels/consumer.js" # Agrega esta línea
