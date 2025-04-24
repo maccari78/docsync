@@ -1,4 +1,6 @@
 puts "Cleaning database..."
+Message.delete_all
+Conversation.delete_all
 Payment.delete_all
 Appointment.delete_all
 ProfessionalsSecretary.delete_all
