@@ -2,16 +2,12 @@ import consumer from "./consumer";
 
 console.log("chat_channel.js: Script started loading at", new Date().toISOString());
 
-let subscription = null; // Almacena la suscripción para evitar duplicados
+let subscription = null;
 
-try {
-  console.log("chat_channel.js loaded at", new Date().toISOString());
-  console.log("Document readyState:", document.readyState);
-  console.log("Turbo enabled:", document.body ? document.body.dataset.turbo : "body not yet loaded");
-
+document.addEventListener("turbo:load", () => {
+  console.log("turbo:load fired at", new Date().toISOString());
   window.subscribeToChatChannel = function() {
     try {
-      // Si ya hay una suscripción, no hagas nada
       if (subscription) {
         console.log("Already subscribed to ChatChannel, skipping...");
         return;
@@ -39,7 +35,7 @@ try {
               },
               disconnected() {
                 console.log("Disconnected from ChatChannel");
-                subscription = null; // Limpia la suscripción al desconectar
+                subscription = null;
               },
               received(data) {
                 console.log("Received data:", data);
@@ -65,10 +61,7 @@ try {
     }
   };
 
-  // Llama a la suscripción solo una vez al cargar el script
   window.subscribeToChatChannel();
-} catch (error) {
-  console.error("Error in chat_channel.js:", error);
-}
+});
 
 console.log("chat_channel.js: Script finished loading at", new Date().toISOString());
