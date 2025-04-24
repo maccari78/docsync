@@ -39,4 +39,8 @@ Rails.application.configure do
   }
   
   config.active_storage.service = :cloudinary
+
+  config.action_cable.mount_path = "/cable"
+  config.action_cable.url = "wss://docsync-8ti1.onrender.com/cable"
+  config.action_cable.allowed_request_origins = ["https://docsync-8ti1.onrender.com"]
 end
