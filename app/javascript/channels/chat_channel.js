@@ -8,12 +8,12 @@ document.addEventListener("turbo:load", () => {
   console.log("turbo:load fired at", new Date().toISOString());
   window.subscribeToChatChannel = function() {
     try {
+      console.log("subscribeToChatChannel called at", new Date().toISOString());
       if (subscription) {
         console.log("Already subscribed to ChatChannel, skipping...");
         return;
       }
 
-      console.log("subscribeToChatChannel called at", new Date().toISOString());
       const conversationMeta = document.querySelector('meta[name="conversation-id"]');
       if (conversationMeta) {
         console.log("Found conversation meta tag");
@@ -26,7 +26,7 @@ document.addEventListener("turbo:load", () => {
         console.log("Current User Email:", currentUserEmail);
 
         if (conversationId && currentUserEmail) {
-          console.log("Attempting to subscribe to ChatChannel");
+          console.log("Attempting to subscribe to ChatChannel with params:", { channel: "ChatChannel", conversation_id: conversationId });
           subscription = consumer.subscriptions.create(
             { channel: "ChatChannel", conversation_id: conversationId },
             {
@@ -47,13 +47,16 @@ document.addEventListener("turbo:load", () => {
                 messages.appendChild(messageDiv);
                 messages.scrollTop = messages.scrollHeight;
               },
+              rejected() {
+                console.log("Subscription rejected for conversation", conversationId);
+              }
             }
           );
         } else {
-          console.log("Missing conversationId or currentUserEmail");
+          console.error("Missing conversationId or currentUserEmail");
         }
       } else {
-        console.log("No conversation meta tag found");
+        console.error("No conversation meta tag found");
         console.log("All meta tags:", document.querySelectorAll('meta'));
       }
     } catch (error) {
