@@ -44,4 +44,6 @@ Rails.application.configure do
   config.action_cable.mount_path = "/cable"
   config.action_cable.url = "wss://docsync-8ti1.onrender.com/cable"
   config.action_cable.allowed_request_origins = ["https://docsync-8ti1.onrender.com"]
+
+  config.assets.js_compressor = nil
 end
