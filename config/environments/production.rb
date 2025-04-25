@@ -46,4 +46,6 @@ Rails.application.configure do
   config.action_cable.allowed_request_origins = ["https://docsync-8ti1.onrender.com"]
 
   config.assets.js_compressor = nil
+  config.public_file_server.enabled = true
+  config.force_ssl = false
 end
