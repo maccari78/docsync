@@ -1,10 +1,9 @@
-pin "application"
-pin "@hotwired/turbo-rails", to: "turbo.min.js"
-pin "@hotwired/stimulus", to: "stimulus.min.js"
-pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
-pin "@rails/ujs", to: "rails-ujs.js"
-pin "@rails/actioncable", to: "actioncable.esm.js"
-pin_all_from "app/javascript/controllers", under: "controllers"
-pin_all_from "app/javascript/channels", under: "channels"
-pin "channels/consumer", to: "channels/consumer.js"
-pin "channels/chat_channel", to: "channels/chat_channel.js"
+pin "application", preload: true
+pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true
+pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
+pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
+pin "@rails/ujs", to: "rails-ujs.js", preload: true
+pin "@rails/actioncable", to: "actioncable.esm.js", preload: true
+pin_all_from "app/javascript/controllers", under: "controllers", preload: true
+pin "channels/consumer", to: "channels/consumer.js", preload: true
+pin "channels/chat_channel", to: "channels/chat_channel.js", preload: true
