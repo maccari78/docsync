@@ -8,7 +8,7 @@ if (host.includes("docsync-8ti1.onrender.com")) {
 } else if (host.includes("0.0.0.0:4000")) {
   cableUrl = "ws://0.0.0.0:4000/cable";
 } else {
-  cableUrl = "wss://localhost:3000/cable";
+  cableUrl = "ws://localhost:3000/cable";
 }
 
 console.log("consumer.js: Connecting to", cableUrl);
