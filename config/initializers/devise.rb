@@ -33,4 +33,6 @@ Devise.setup do |config|
     Rails.logger.debug { "Deserializing user from session with ID: #{id}" }
     User.find_by(id: id)
   end
+
+  config.secret_key = ENV['SECRET_KEY_BASE'] || Rails.application.credentials.secret_key_base
 end
