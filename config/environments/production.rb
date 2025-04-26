@@ -42,13 +42,13 @@ Rails.application.configure do
   config.active_storage.service = :cloudinary
 
   config.action_cable.mount_path = "/cable"
-  if ENV["RENDER"]
-    config.action_cable.url = "wss://docsync-8ti1.onrender.com/cable"
-    config.action_cable.allowed_request_origins = ["https://docsync-8ti1.onrender.com"]
-  else
-    config.action_cable.url = "ws://0.0.0.0:4000/cable"
-    config.action_cable.allowed_request_origins = ["http://0.0.0.0:4000"]
-  end
+    if ENV["RENDER"]
+      config.action_cable.url = "wss://docsync-8ti1.onrender.com/cable"
+      config.action_cable.allowed_request_origins = ["https://docsync-8ti1.onrender.com"]
+    else
+      config.action_cable.url = "ws://localhost:4000/cable"
+      config.action_cable.allowed_request_origins = ["http://0.0.0.0:4000", "http://localhost:4000"]
+    end
 
   config.assets.js_compressor = nil
   config.assets.compile = true
