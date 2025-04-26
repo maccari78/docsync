@@ -51,6 +51,7 @@ Rails.application.configure do
   end
 
   config.assets.js_compressor = nil
+  config.assets.compile = true
   config.public_file_server.enabled = true
   config.force_ssl = false
 end
