@@ -19,6 +19,9 @@
           form: { data: { turbo_confirm: "Are you sure?" } }, 
           class: "btn btn-danger" %>
       <% end %>
+      <% if @appointment.conversation && %w[confirmed completed].include?(@appointment.status) %>
+        <%= link_to "Open Chat", conversation_path(@appointment.conversation), class: "btn btn-primary" %>
+      <% end %>
       <%= link_to "Back to Calendar", appointments_path, class: "btn btn-secondary" %>
     </div>
   </div>
@@ -34,11 +37,6 @@
       <% if @appointment.payment %>
         <p><strong>Payment Status:</strong> <%= @appointment.payment.status&.humanize&.capitalize || 'N/A' %></p>
       <% end %>
-      <% if @appointment.conversation && %w[confirmed completed].include?(@appointment.status) %>
-          <%= link_to 'Open Chat', conversation_path(@appointment.conversation), class: 'btn btn-primary mt-3' %>
-        <% end %>
-        <%= link_to 'Back to Calendar', appointments_path, class: 'btn btn-secondary mt-3' %>
-      </div>
     </div>
   </div>
 </div>

@@ -10,11 +10,12 @@ class MessagesController < ApplicationController
     if @message.save
       puts "Broadcasting to conversation #{@conversation.id}"
       ChatChannel.broadcast_to(@conversation, {
-                                 id: @message.id,
-                                 user: @message.user.email,
-                                 content: @message.content,
-                                 created_at: @message.created_at.strftime('%H:%M')
-                               })
+        id: @message.id,
+        user: @message.user.email,
+        user_name: "#{@message.user.first_name} #{@message.user.last_name}",
+        content: @message.content,
+        created_at: @message.created_at.strftime('%H:%M')
+      })
       redirect_to conversation_path(@conversation, anchor: "message-#{@message.id}")
     else
       @messages = @conversation.messages

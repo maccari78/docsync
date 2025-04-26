@@ -20,12 +20,14 @@ document.addEventListener("turbo:load", () => {
         const conversationId = conversationMeta.content;
         const messagesContainer = document.getElementById("messages");
         const currentUserEmail = messagesContainer ? messagesContainer.dataset.currentUserEmail : null;
+        const currentUserFullName = messagesContainer ? messagesContainer.dataset.currentUserFullName : null;
 
         console.log("Conversation ID:", conversationId);
         console.log("Messages Container:", messagesContainer);
         console.log("Current User Email:", currentUserEmail);
+        console.log("Current User Full Name:", currentUserFullName);
 
-        if (conversationId && currentUserEmail) {
+        if (conversationId && currentUserEmail && currentUserFullName) {
           console.log("Attempting to subscribe to ChatChannel with params:", { channel: "ChatChannel", conversation_id: conversationId });
           subscription = consumer.subscriptions.create(
             { channel: "ChatChannel", conversation_id: conversationId },
@@ -43,7 +45,8 @@ document.addEventListener("turbo:load", () => {
                 const messageDiv = document.createElement("div");
                 messageDiv.id = `message-${data.id}`;
                 messageDiv.className = `mb-2 ${data.user === currentUserEmail ? "text-end" : "text-start"}`;
-                messageDiv.innerHTML = `<strong>${data.user}:</strong> ${data.content} <small class="text-muted">(${data.created_at})</small>`;
+                const userName = data.user === currentUserEmail ? currentUserFullName : data.user_name;
+                messageDiv.innerHTML = `<strong>${userName || 'Unknown User'}:</strong> ${data.content} <small class="text-muted">(${data.created_at})</small>`;
                 messages.appendChild(messageDiv);
                 messages.scrollTop = messages.scrollHeight;
               },
@@ -53,7 +56,7 @@ document.addEventListener("turbo:load", () => {
             }
           );
         } else {
-          console.error("Missing conversationId or currentUserEmail");
+          console.error("Missing conversationId, currentUserEmail, or currentUserFullName");
         }
       } else {
         console.error("No conversation meta tag found");
