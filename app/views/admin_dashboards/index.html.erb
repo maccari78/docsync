@@ -1,21 +1,19 @@
 <div class="container-fluid mt-3 px-4 d-flex flex-column" style="min-height: 100vh;">
   <h1 class="mb-4">Admin Dashboard</h1>
-  <%= form_with url: admin_dashboards_path, method: :get, local: true, class: "mb-4" do |form| %>
-    <div class="row g-2 align-items-end">
-      <div class="col">
+  <%= form_with url: admin_dashboards_path, method: :get, local: true, class: "mb-3 filter-form" do |form| %>
+    <div class="row g-3">
+      <div class="col-12 col-md-3">
         <%= form.select :clinic_id, Clinic.all.pluck(:name, :id), { include_blank: "Filter by Clinic" }, class: "form-select" %>
       </div>
-      <div class="col">
+      <div class="col-12 col-md-3">
         <%= form.date_field :start_date, value: params[:start_date], class: "form-control date-field", id: "start-date" %>
       </div>
-      <div class="col">
+      <div class="col-12 col-md-3">
         <%= form.date_field :end_date, value: params[:end_date], class: "form-control date-field", id: "end-date" %>
       </div>
-      <div class="col-auto ms-auto">
-        <div class="d-flex gap-2">
-          <%= form.submit "Apply Filters", class: "btn btn-primary" %>
-          <%= link_to "Clear Filters", admin_dashboards_path, class: "btn btn-secondary" %>
-        </div>
+      <div class="col-12 col-md-3 d-flex align-items-end">
+        <%= form.submit 'Filter', class: 'btn btn-primary me-2 w-100' %>
+        <%= link_to 'Clear', admin_dashboards_path, class: 'btn btn-secondary w-100' %>
       </div>
     </div>
   <% end %>
