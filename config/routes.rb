@@ -48,4 +48,12 @@ Rails.application.routes.draw do
   resources :admin_dashboards, only: [:index]
 
   root "appointments#index"
+
+  # API Mobile
+  namespace :api do
+    namespace :v1 do
+      # Health check
+      get 'health', to: 'health#index'
+    end
+  end
 end

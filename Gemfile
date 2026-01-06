@@ -50,3 +50,7 @@ gem 'ruby-vips'
 gem 'actioncable'
 
 gem 'redis'
+
+# API Mobile
+gem 'rack-cors'
+gem 'jwt'
