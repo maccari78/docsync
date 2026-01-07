@@ -49,4 +49,15 @@ class User < ApplicationRecord
       email.split('@').first
     end
   end
+
+  # JWT Token generation
+  def generate_jwt
+    payload = {
+      user_id: id,
+      email: email,
+      role: role,
+      exp: 24.hours.from_now.to_i
+    }
+    JWT.encode(payload, JWT_SECRET, JWT_ALGORITHM)
+  end
 end

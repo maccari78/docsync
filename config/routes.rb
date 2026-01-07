@@ -54,6 +54,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       # Health check
       get 'health', to: 'health#index'
+      
+      # Authentication
+      post 'auth/login', to: 'sessions#create'
+      delete 'auth/logout', to: 'sessions#destroy'
+      get 'auth/me', to: 'sessions#me'
     end
   end
 end
