@@ -27,6 +27,54 @@ module Api
         
         render json: serialize_appointment(appointment)
       end
+
+      # PATCH/PUT /api/v1/appointments/:id
+      def update
+        appointment = find_appointment
+        return unless appointment
+        
+        if appointment.update(appointment_params)
+          render json: serialize_appointment(appointment), status: :ok
+        else
+          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+      
+      # POST /api/v1/appointments/:id/confirm
+      def confirm
+        appointment = find_appointment
+        return unless appointment
+        
+        if appointment.update(status: 'confirmed')
+          render json: serialize_appointment(appointment), status: :ok
+        else
+          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+      
+      # POST /api/v1/appointments/:id/cancel
+      def cancel
+        appointment = find_appointment
+        return unless appointment
+        
+        if appointment.update(status: 'cancelled')
+          render json: serialize_appointment(appointment), status: :ok
+        else
+          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+      
+      # POST /api/v1/appointments/:id/complete
+      def complete
+        appointment = find_appointment
+        return unless appointment
+        
+        if appointment.update(status: 'completed')
+          render json: serialize_appointment(appointment), status: :ok
+        else
+          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
       
       private
       
@@ -52,7 +100,9 @@ module Api
           patient && appointment.patient_id == patient.id
         else
           false
-        end
+        enddef appointment_params
+        params.require(:appointment).permit(:status, :treatment_details, :prescription)
+      end
       end
       
       def serialize_appointment(appointment)
@@ -80,6 +130,10 @@ module Api
             address: appointment.clinic.address
           }
         }
+      end
+
+      def appointment_params
+        params.require(:appointment).permit(:status, :treatment_details, :prescription)
       end
     end
   end
