@@ -61,13 +61,17 @@ Rails.application.routes.draw do
       get 'auth/me', to: 'sessions#me'
 
       # Appointments
-      resources :appointments, only: [:index, :show, :update] do
+      resources :appointments, only: [:index, :show, :update, :create] do
         member do
           post :confirm
           post :cancel
           post :complete
         end
       end
+
+      # Professionals and Clinics
+      resources :professionals, only: [:index]
+      resources :clinics, only: [:index]
     end
   end
 end

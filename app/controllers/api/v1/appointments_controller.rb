@@ -19,6 +19,36 @@ module Api
         
         render json: appointments.map { |apt| serialize_appointment(apt) }
       end
+
+      # POST /api/v1/appointments
+      def create
+        appointment = Appointment.new(create_appointment_params)
+        
+        # Set defaults based on user role
+        case current_api_user.role
+        when 'patient'
+          # Patient creating their own appointment
+          patient = Patient.find_by(email: current_api_user.email)
+          unless patient
+            render json: { error: 'Patient record not found' }, status: :not_found
+            return
+          end
+          appointment.patient = patient
+          appointment.status = 'pending'
+        when 'admin', 'secretary'
+          # Admin/Secretary can create for any patient
+          appointment.status = params[:appointment][:status] || 'pending'
+        else
+          render json: { error: 'Unauthorized' }, status: :unauthorized
+          return
+        end
+        
+        if appointment.save
+          render json: serialize_appointment(appointment), status: :created
+        else
+          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
       
       # GET /api/v1/appointments/:id
       def show
@@ -134,6 +164,17 @@ module Api
 
       def appointment_params
         params.require(:appointment).permit(:status, :treatment_details, :prescription)
+      end
+
+      def create_appointment_params
+        params.require(:appointment).permit(
+          :patient_id, 
+          :professional_id, 
+          :clinic_id, 
+          :date, 
+          :time, 
+          :treatment_details
+        )
       end
     end
   end
