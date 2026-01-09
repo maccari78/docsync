@@ -62,6 +62,9 @@ Rails.application.routes.draw do
 
       # Appointments
       resources :appointments, only: [:index, :show, :update, :create] do
+        collection do
+          get :availability  # NUEVA LÍNEA
+        end
         member do
           post :confirm
           post :cancel
@@ -72,6 +75,7 @@ Rails.application.routes.draw do
       # Professionals and Clinics
       resources :professionals, only: [:index]
       resources :clinics, only: [:index]
+      resources :patients, only: [:index]
     end
   end
 end

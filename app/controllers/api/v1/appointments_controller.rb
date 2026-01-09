@@ -6,24 +6,24 @@ module Api
       def index
         appointments = case current_api_user.role
         when 'admin'
-          Appointment.includes(:patient, :professional, :clinic).all
+          Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic).all
         when 'professional'
-          current_api_user.appointments.includes(:patient, :clinic)
+          current_api_user.appointments.where(deleted_at: nil).includes(:patient, :clinic)
         when 'patient'
           # Encontrar el registro Patient asociado al usuario
           patient = Patient.find_by(email: current_api_user.email)
-          patient ? patient.appointments.includes(:professional, :clinic) : []
+          patient ? patient.appointments.where(deleted_at: nil).includes(:professional, :clinic) : []
         else
           []
         end
-        
+
         render json: appointments.map { |apt| serialize_appointment(apt) }
       end
 
       # POST /api/v1/appointments
       def create
         appointment = Appointment.new(create_appointment_params)
-        
+
         # Set defaults based on user role
         case current_api_user.role
         when 'patient'
@@ -105,6 +105,35 @@ module Api
           render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
         end
       end
+
+      # GET /api/v1/appointments/availability?professional_id=X&date=2024-01-09
+      def availability
+        professional_id = params[:professional_id]
+        date = Date.parse(params[:date])
+        
+        # Obtener turnos ocupados para ese profesional en esa fecha
+        occupied_times = Appointment
+          .where(professional_id: professional_id, date: date)
+          .where.not(status: 'cancelled')
+          .pluck(:time)
+          .map { |time| time.strftime('%H:%M') }
+        
+        # Horarios posibles
+        all_time_slots = [
+          '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+          '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'
+        ]
+        
+        # Horarios disponibles
+        available_times = all_time_slots - occupied_times
+        
+        render json: {
+          date: date,
+          professional_id: professional_id,
+          occupied: occupied_times,
+          available: available_times
+        }
+      end
       
       private
       
@@ -130,11 +159,9 @@ module Api
           patient && appointment.patient_id == patient.id
         else
           false
-        enddef appointment_params
-        params.require(:appointment).permit(:status, :treatment_details, :prescription)
+        end
       end
-      end
-      
+
       def serialize_appointment(appointment)
         {
           id: appointment.id,
@@ -167,14 +194,21 @@ module Api
       end
 
       def create_appointment_params
-        params.require(:appointment).permit(
-          :patient_id, 
-          :professional_id, 
-          :clinic_id, 
-          :date, 
-          :time, 
+        permitted = params.require(:appointment).permit(
+          :patient_id,
+          :professional_id,
+          :clinic_id,
+          :date,
+          :time,
           :treatment_details
         )
+
+        # Fix timezone issue - convert date string to Date object
+        if permitted[:date].present?
+          permitted[:date] = Date.parse(permitted[:date])
+        end
+
+        permitted
       end
     end
   end

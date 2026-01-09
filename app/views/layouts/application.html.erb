@@ -141,6 +141,7 @@
             calendarEl.fullCalendarInstance.destroy();
           }
           var calendar = new FullCalendar.Calendar(calendarEl, {
+            timeZone: 'local',
             initialView: 'dayGridMonth',
             events: '/appointments.json',
             editable: true,
