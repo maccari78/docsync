@@ -129,7 +129,7 @@ module Api
         
         # Obtener turnos ocupados para ese profesional en esa fecha
         occupied_times = Appointment
-          .where(professional_id: professional_id, date: date)
+          .where(professional_id: professional_id, date: date, deleted_at: nil)
           .where.not(status: 'cancelled')
           .pluck(:time)
           .map { |time| time.strftime('%H:%M') }
