@@ -1,5 +1,5 @@
 class Patient < ApplicationRecord
-  belongs_to :professional, class_name: 'User', inverse_of: :patients_as_professional
+  belongs_to :professional, class_name: 'User', foreign_key: 'professional_id', inverse_of: :patients_as_professional
   has_one_attached :photo
   has_many :appointments, dependent: :destroy, inverse_of: :patient
   validates :first_name, :last_name, :email, presence: true

@@ -8,7 +8,14 @@ module Api
         when 'admin'
           Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic).all
         when 'professional'
-          current_api_user.appointments.where(deleted_at: nil).includes(:patient, :clinic)
+          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic)
+        when 'secretary'
+          # Secretary sees appointments from their clinic
+          if current_api_user.clinic_id
+            Appointment.where(clinic_id: current_api_user.clinic_id, deleted_at: nil).includes(:patient, :professional, :clinic)
+          else
+            []
+          end
         when 'patient'
           # Encontrar el registro Patient asociado al usuario
           patient = Patient.find_by(email: current_api_user.email)
@@ -35,6 +42,15 @@ module Api
           end
           appointment.patient = patient
           appointment.status = 'pending'
+        when 'professional'
+          # Professional can only create appointments for themselves
+          unless current_api_user.professional
+            render json: { error: 'Professional record not found' }, status: :not_found
+            return
+          end
+          # Force professional_id to be the current user's professional record
+          appointment.professional_id = current_api_user.professional.id
+          appointment.status = params[:appointment][:status] || 'pending'
         when 'admin', 'secretary'
           # Admin/Secretary can create for any patient
           appointment.status = params[:appointment][:status] || 'pending'
@@ -153,7 +169,7 @@ module Api
         when 'admin'
           true
         when 'professional'
-          appointment.professional_id == current_api_user.id
+          current_api_user.professional && appointment.professional_id == current_api_user.professional.id
         when 'patient'
           patient = Patient.find_by(email: current_api_user.email)
           patient && appointment.patient_id == patient.id

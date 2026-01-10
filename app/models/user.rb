@@ -24,7 +24,7 @@ class User < ApplicationRecord
   has_one :professional, dependent: :destroy, inverse_of: :user
   has_many :appointments_as_patient, class_name: 'Appointment', foreign_key: 'patient_id', inverse_of: :patient
   has_many :appointments_as_professional, through: :professional, source: :appointments
-  has_many :patients_as_professional, through: :professional, source: :patients
+  has_many :patients_as_professional, foreign_key: 'professional_id', class_name: 'Patient'
   has_many :professionals_secretaries, foreign_key: :secretary_id, dependent: :destroy
   has_many :professionals, through: :professionals_secretaries
   has_many :sent_conversations, class_name: 'Conversation', foreign_key: 'sender_id' 
