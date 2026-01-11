@@ -76,6 +76,15 @@ Rails.application.routes.draw do
       resources :professionals, only: [:index]
       resources :clinics, only: [:index]
       resources :patients, only: [:index]
+
+      # Conversations & Messages
+      resources :conversations, only: [:index, :show] do
+        resources :messages, only: [:index, :create] do
+          collection do
+            post :typing
+          end
+        end
+      end
     end
   end
 end

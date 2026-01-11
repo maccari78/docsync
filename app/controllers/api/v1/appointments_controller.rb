@@ -6,20 +6,20 @@ module Api
       def index
         appointments = case current_api_user.role
         when 'admin'
-          Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic).all
+          Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic, conversation: :messages).all
         when 'professional'
-          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic)
+          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic, conversation: :messages)
         when 'secretary'
           # Secretary sees appointments from their clinic
           if current_api_user.clinic_id
-            Appointment.where(clinic_id: current_api_user.clinic_id, deleted_at: nil).includes(:patient, :professional, :clinic)
+            Appointment.where(clinic_id: current_api_user.clinic_id, deleted_at: nil).includes(:patient, :professional, :clinic, conversation: :messages)
           else
             []
           end
         when 'patient'
           # Encontrar el registro Patient asociado al usuario
           patient = Patient.find_by(email: current_api_user.email)
-          patient ? patient.appointments.where(deleted_at: nil).includes(:professional, :clinic) : []
+          patient ? patient.appointments.where(deleted_at: nil).includes(:professional, :clinic, conversation: :messages) : []
         else
           []
         end
@@ -154,13 +154,13 @@ module Api
       private
       
       def find_appointment
-        appointment = Appointment.includes(:patient, :professional, :clinic).find_by(id: params[:id])
-        
+        appointment = Appointment.includes(:patient, :professional, :clinic, conversation: :messages).find_by(id: params[:id])
+
         unless appointment && can_access_appointment?(appointment)
           render json: { error: 'Appointment not found' }, status: :not_found
           return nil
         end
-        
+
         appointment
       end
       
@@ -201,7 +201,12 @@ module Api
             id: appointment.clinic.id,
             name: appointment.clinic.name,
             address: appointment.clinic.address
-          }
+          },
+          conversation: appointment.conversation ? {
+            id: appointment.conversation.id,
+            has_messages: appointment.conversation.messages.any?,
+            message_count: appointment.conversation.messages.count
+          } : nil
         }
       end
 
