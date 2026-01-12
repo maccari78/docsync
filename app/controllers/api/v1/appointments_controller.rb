@@ -6,20 +6,20 @@ module Api
       def index
         appointments = case current_api_user.role
         when 'admin'
-          Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic, conversation: :messages).all
+          Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic, :payment, conversation: :messages).all
         when 'professional'
-          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic, conversation: :messages)
+          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic, :payment, conversation: :messages)
         when 'secretary'
           # Secretary sees appointments from their clinic
           if current_api_user.clinic_id
-            Appointment.where(clinic_id: current_api_user.clinic_id, deleted_at: nil).includes(:patient, :professional, :clinic, conversation: :messages)
+            Appointment.where(clinic_id: current_api_user.clinic_id, deleted_at: nil).includes(:patient, :professional, :clinic, :payment, conversation: :messages)
           else
             []
           end
         when 'patient'
           # Encontrar el registro Patient asociado al usuario
           patient = Patient.find_by(email: current_api_user.email)
-          patient ? patient.appointments.where(deleted_at: nil).includes(:professional, :clinic, conversation: :messages) : []
+          patient ? patient.appointments.where(deleted_at: nil).includes(:professional, :clinic, :payment, conversation: :messages) : []
         else
           []
         end
@@ -126,23 +126,23 @@ module Api
       def availability
         professional_id = params[:professional_id]
         date = Date.parse(params[:date])
-        
+
         # Obtener turnos ocupados para ese profesional en esa fecha
         occupied_times = Appointment
           .where(professional_id: professional_id, date: date, deleted_at: nil)
           .where.not(status: 'cancelled')
           .pluck(:time)
           .map { |time| time.strftime('%H:%M') }
-        
+
         # Horarios posibles
         all_time_slots = [
           '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
           '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'
         ]
-        
+
         # Horarios disponibles
         available_times = all_time_slots - occupied_times
-        
+
         render json: {
           date: date,
           professional_id: professional_id,
@@ -150,11 +150,82 @@ module Api
           available: available_times
         }
       end
-      
+
+      # POST /api/v1/appointments/:id/initiate_payment
+      def initiate_payment
+        appointment = find_appointment
+        return unless appointment
+
+        # Check if appointment can be paid
+        unless appointment.confirmed? || appointment.completed?
+          render json: { error: 'Appointment must be confirmed or completed to process payment' }, status: :unprocessable_entity
+          return
+        end
+
+        # Check if already paid
+        if appointment.payment&.approved?
+          render json: { error: 'Appointment is already paid' }, status: :unprocessable_entity
+          return
+        end
+
+        # Amount in cents (e.g., $10.00 = 1000 cents)
+        amount = 1000
+
+        # Create or find payment record
+        payment = appointment.payment || appointment.create_payment!(
+          amount: amount / 100.0,
+          status: :pending
+        )
+
+        # Configure Stripe
+        Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY', nil)
+
+        begin
+          # Create Stripe Checkout Session
+          session = Stripe::Checkout::Session.create({
+            payment_method_types: ['card'],
+            line_items: [{
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: "Turno con #{appointment.professional.user.first_name} #{appointment.professional.user.last_name} - #{appointment.date.strftime('%d/%m/%Y')}"
+                },
+                unit_amount: amount
+              },
+              quantity: 1
+            }],
+            mode: 'payment',
+            success_url: success_appointment_url(appointment, protocol: Rails.env.production? ? 'https' : 'http'),
+            cancel_url: failure_appointment_url(appointment, protocol: Rails.env.production? ? 'https' : 'http'),
+            metadata: { payment_id: payment.id.to_s }
+          })
+
+          # Save Stripe session ID
+          payment.update(external_payment_id: session.id)
+
+          # Return checkout URL
+          render json: {
+            checkout_url: session.url,
+            payment: {
+              id: payment.id,
+              amount: payment.amount,
+              status: payment.status
+            }
+          }, status: :ok
+
+        rescue Stripe::StripeError => e
+          Rails.logger.error "Stripe Error: #{e.message}"
+          render json: { error: "Payment processing error: #{e.message}" }, status: :unprocessable_entity
+        rescue StandardError => e
+          Rails.logger.error "Unexpected error: #{e.message}\n#{e.backtrace.join("\n")}"
+          render json: { error: 'Unexpected error initiating payment' }, status: :internal_server_error
+        end
+      end
+
       private
       
       def find_appointment
-        appointment = Appointment.includes(:patient, :professional, :clinic, conversation: :messages).find_by(id: params[:id])
+        appointment = Appointment.includes(:patient, :professional, :clinic, :payment, conversation: :messages).find_by(id: params[:id])
 
         unless appointment && can_access_appointment?(appointment)
           render json: { error: 'Appointment not found' }, status: :not_found
@@ -206,6 +277,11 @@ module Api
             id: appointment.conversation.id,
             has_messages: appointment.conversation.messages.any?,
             message_count: appointment.conversation.messages.count
+          } : nil,
+          payment: appointment.payment ? {
+            id: appointment.payment.id,
+            amount: appointment.payment.amount,
+            status: appointment.payment.status
           } : nil
         }
       end

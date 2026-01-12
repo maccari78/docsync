@@ -284,8 +284,8 @@ class AppointmentsController < ApplicationController
                                                    }],
                                                    mode: 'payment',
                                                    success_url: success_appointment_url(@appointment,
-                                                                                        protocol: 'https'),
-                                                   cancel_url: failure_appointment_url(@appointment, protocol: 'https'),
+                                                                                        protocol: Rails.env.production? ? 'https' : 'http'),
+                                                   cancel_url: failure_appointment_url(@appointment, protocol: Rails.env.production? ? 'https' : 'http'),
                                                    metadata: { payment_id: payment.id.to_s }
                                                  })
       Rails.logger.info "Stripe session created: ID #{session.id}"

@@ -63,12 +63,13 @@ Rails.application.routes.draw do
       # Appointments
       resources :appointments, only: [:index, :show, :update, :create] do
         collection do
-          get :availability  # NUEVA LÍNEA
+          get :availability
         end
         member do
           post :confirm
           post :cancel
           post :complete
+          post :initiate_payment
         end
       end
 
