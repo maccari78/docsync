@@ -20,6 +20,33 @@ class User < ApplicationRecord
     end
   end
 
+  # Mobile-specific OAuth method
+  # Accepts a hash from verified Google ID token:
+  # { email:, given_name:, family_name:, sub: }
+  def self.from_omniauth_mobile(google_info)
+    # Find by email first (link existing accounts)
+    user = find_by(email: google_info[:email])
+
+    if user
+      # Update provider and uid if not set (link existing account to Google)
+      if user.provider.nil? || user.uid.nil?
+        user.update(provider: 'google_oauth2', uid: google_info[:sub])
+      end
+      return user
+    end
+
+    # Find or create by provider + uid
+    where(provider: 'google_oauth2', uid: google_info[:sub]).first_or_create do |user|
+      user.email = google_info[:email]
+      user.password = Devise.friendly_token[0, 20]
+      user.first_name = google_info[:given_name] || 'Unknown'
+      user.last_name = google_info[:family_name] || 'User'
+      user.role = 'patient' # Default role for new Google sign-ins
+      user.provider = 'google_oauth2'
+      user.uid = google_info[:sub]
+    end
+  end
+
   belongs_to :clinic, optional: true, inverse_of: :users
   has_one :professional, dependent: :destroy, inverse_of: :user
   has_many :appointments_as_patient, class_name: 'Appointment', foreign_key: 'patient_id', inverse_of: :patient

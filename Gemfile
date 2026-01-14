@@ -54,3 +54,4 @@ gem 'redis'
 # API Mobile
 gem 'rack-cors'
 gem 'jwt'
+gem 'google-id-token'

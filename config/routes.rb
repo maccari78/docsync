@@ -59,6 +59,7 @@ Rails.application.routes.draw do
       post 'auth/login', to: 'sessions#create'
       delete 'auth/logout', to: 'sessions#destroy'
       get 'auth/me', to: 'sessions#me'
+      post 'auth/google', to: 'google_auth#create'
 
       # Appointments
       resources :appointments, only: [:index, :show, :update, :create] do
