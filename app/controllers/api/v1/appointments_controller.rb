@@ -8,7 +8,11 @@ module Api
         when 'admin'
           Appointment.where(deleted_at: nil).includes(:patient, :professional, :clinic, :payment, conversation: :messages).all
         when 'professional'
-          current_api_user.appointments_as_professional.where(deleted_at: nil).includes(:patient, :clinic, :payment, conversation: :messages)
+          if current_api_user.professional
+            current_api_user.professional.appointments.where(deleted_at: nil).includes(:patient, :clinic, :payment, conversation: :messages)
+          else
+            []
+          end
         when 'secretary'
           # Secretary sees appointments from their clinic
           if current_api_user.clinic_id
@@ -87,34 +91,67 @@ module Api
       end
       
       # POST /api/v1/appointments/:id/confirm
+      # Only admin and secretary can confirm appointments
       def confirm
         appointment = find_appointment
         return unless appointment
-        
+
+        unless %w[admin secretary].include?(current_api_user.role)
+          render json: { error: 'Solo secretarias y administradores pueden confirmar turnos' }, status: :forbidden
+          return
+        end
+
+        unless appointment.status == 'pending'
+          render json: { error: 'Solo se pueden confirmar turnos pendientes' }, status: :unprocessable_entity
+          return
+        end
+
         if appointment.update(status: 'confirmed')
           render json: serialize_appointment(appointment), status: :ok
         else
           render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
         end
       end
-      
+
       # POST /api/v1/appointments/:id/cancel
+      # Admin, secretary, and the patient who owns the appointment can cancel
       def cancel
         appointment = find_appointment
         return unless appointment
-        
+
+        unless %w[admin secretary patient].include?(current_api_user.role)
+          render json: { error: 'No tiene permisos para cancelar este turno' }, status: :forbidden
+          return
+        end
+
+        unless %w[pending confirmed].include?(appointment.status)
+          render json: { error: 'Solo se pueden cancelar turnos pendientes o confirmados' }, status: :unprocessable_entity
+          return
+        end
+
         if appointment.update(status: 'cancelled')
           render json: serialize_appointment(appointment), status: :ok
         else
           render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
         end
       end
-      
+
       # POST /api/v1/appointments/:id/complete
+      # Only admin, secretary, and professional can complete (or auto-complete on payment)
       def complete
         appointment = find_appointment
         return unless appointment
-        
+
+        unless %w[admin secretary professional].include?(current_api_user.role)
+          render json: { error: 'Solo profesionales, secretarias y administradores pueden completar turnos' }, status: :forbidden
+          return
+        end
+
+        unless appointment.status == 'confirmed'
+          render json: { error: 'Solo se pueden completar turnos confirmados' }, status: :unprocessable_entity
+          return
+        end
+
         if appointment.update(status: 'completed')
           render json: serialize_appointment(appointment), status: :ok
         else
@@ -241,6 +278,9 @@ module Api
           true
         when 'professional'
           current_api_user.professional && appointment.professional_id == current_api_user.professional.id
+        when 'secretary'
+          # Secretary can access appointments from their clinic
+          current_api_user.clinic_id && appointment.clinic_id == current_api_user.clinic_id
         when 'patient'
           patient = Patient.find_by(email: current_api_user.email)
           patient && appointment.patient_id == patient.id

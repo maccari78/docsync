@@ -77,6 +77,17 @@ class User < ApplicationRecord
     end
   end
 
+  # Count unread messages for this user (messages in conversations where user is sender or receiver, but not authored by user)
+  def unread_messages_count
+    conversation_ids = sent_conversations.pluck(:id) + received_conversations.pluck(:id)
+    return 0 if conversation_ids.empty?
+
+    Message.where(conversation_id: conversation_ids)
+           .where.not(user_id: id) # Not messages sent by this user
+           .unread
+           .count
+  end
+
   # JWT Token generation
   def generate_jwt
     payload = {

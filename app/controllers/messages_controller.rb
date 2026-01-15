@@ -16,6 +16,19 @@ class MessagesController < ApplicationController
         content: @message.content,
         created_at: @message.created_at.strftime('%H:%M')
       })
+
+      # Send notification to the other user
+      recipient = @conversation.sender == current_user ? @conversation.receiver : @conversation.sender
+      if recipient
+        NotificationsChannel.broadcast_to(recipient, {
+          type: 'new_message',
+          conversation_id: @conversation.id,
+          sender_name: "#{current_user.first_name} #{current_user.last_name}",
+          content_preview: @message.content.truncate(50),
+          unread_count: recipient.unread_messages_count
+        })
+      end
+
       redirect_to conversation_path(@conversation, anchor: "message-#{@message.id}")
     else
       @messages = @conversation.messages

@@ -35,6 +35,18 @@ module Api
             created_at: message.created_at.strftime('%H:%M')
           })
 
+          # Send notification to the other user
+          recipient = @conversation.sender == current_api_user ? @conversation.receiver : @conversation.sender
+          if recipient
+            NotificationsChannel.broadcast_to(recipient, {
+              type: 'new_message',
+              conversation_id: @conversation.id,
+              sender_name: "#{current_api_user.first_name} #{current_api_user.last_name}",
+              content_preview: message.content.truncate(50),
+              unread_count: recipient.unread_messages_count
+            })
+          end
+
           Rails.logger.info "Message #{message.id} created and broadcasted to conversation #{@conversation.id}"
 
           render json: serialize_message(message), status: :created

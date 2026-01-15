@@ -81,6 +81,9 @@ Rails.application.routes.draw do
 
       # Conversations & Messages
       resources :conversations, only: [:index, :show] do
+        collection do
+          get :unread_count
+        end
         resources :messages, only: [:index, :create] do
           collection do
             post :typing

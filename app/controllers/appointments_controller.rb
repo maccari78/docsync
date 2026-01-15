@@ -337,8 +337,14 @@ class AppointmentsController < ApplicationController
       if payment
         if session.payment_status == 'paid'
           payment.update(status: :approved)
-          AppointmentMailer.payment_confirmation(payment.appointment).deliver_later
-          Rails.logger.info "Payment approved for appointment #{payment.appointment.id}, payment ID: #{payment.id}"
+          # Auto-complete the appointment when payment is approved
+          appointment = payment.appointment
+          if appointment.status == 'confirmed'
+            appointment.update(status: 'completed')
+            Rails.logger.info "Appointment #{appointment.id} auto-completed after payment"
+          end
+          AppointmentMailer.payment_confirmation(appointment).deliver_later
+          Rails.logger.info "Payment approved for appointment #{appointment.id}, payment ID: #{payment.id}"
         else
           payment.update(status: :rejected)
           Rails.logger.info "Payment rejected for session: #{session.id}"

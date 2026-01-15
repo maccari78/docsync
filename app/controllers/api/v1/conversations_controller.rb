@@ -26,6 +26,9 @@ module Api
         conversation = Conversation.find(params[:id])
         return render_unauthorized unless authorized?(conversation)
 
+        # Mark messages from the other user as read
+        conversation.messages.where.not(user_id: current_api_user.id).unread.update_all(read_at: Time.current)
+
         messages = conversation.messages
                                .includes(:user)
                                .order(created_at: :asc)
@@ -34,6 +37,11 @@ module Api
           conversation: serialize_conversation(conversation),
           messages: messages.map { |m| serialize_message(m) }
         }
+      end
+
+      # GET /api/v1/conversations/unread_count
+      def unread_count
+        render json: { unread_count: current_api_user.unread_messages_count }
       end
 
       private
@@ -70,6 +78,7 @@ module Api
             content: conversation.messages.last.content,
             created_at: conversation.messages.last.created_at
           } : nil,
+          unread_count: conversation.messages.where.not(user_id: current_api_user.id).unread.count,
           created_at: conversation.created_at,
           updated_at: conversation.updated_at
         }
